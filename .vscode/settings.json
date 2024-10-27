@@ -15,10 +15,12 @@
     "appcontext",
     "camelcase",
     "DECLTYPES",
+    "está",
     "executescript",
     "jsonify",
     "lastrowid",
     "pyfile",
+    "Verifica",
     "werkzeug"
   ],
   "cSpell.ignoreWords": [
