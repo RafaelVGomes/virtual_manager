@@ -1,5 +1,7 @@
+from flask import Request, g
+import re
 from pprint import pprint
-from flask import Request
+
 from virtual_manager.db import get_db
 
 
@@ -25,11 +27,48 @@ def updated_columns(old_values:dict, new_values:dict) -> dict:
   return cols
 
 
-def format_field_name(name:str) -> str:
-  name = name.replace('_', ' ').title()
-  return name
+def kebab_case(string:str) -> str:
+  """Formats string to 'kebab-case'."""
+  return '-'.join(
+    re.sub('([A-Z][a-z]+)', r' \1',
+    re.sub('([A-Z]+)', r' \1',
+    string.replace('-', ' '))).split()).lower()
 
+def camelCase(string:str) -> str:
+  """Formats string to 'camelCase'."""
+  s = string.rsplit(('_' or ''))
+  
+  for i in range(0, len(s)):
+    if i > 0:
+      s[i] = s[i].capitalize()
+  
+  return ''.join(s)
 
+def form_handle(product_id, request):
+  db = get_db()
+  # index_pattern = re.compile(r"\d+")
+  recipe_names_pattern = re.compile(r"recipe(?!0)\d+")
+  for key in request.form.keys():
+    if recipe_names_pattern.match(key):
+      # index = index_pattern.search(key)[0]
+      values = request.form.getlist(key)
+
+      recipe = {
+        f"userId": int(g.user['id']),
+        f"recipeId": int(values[0]),
+        f"productId": int(product_id),
+        f"itemId": int(values[1].split(",")[0]),
+        f"itemAmount": int(values[2])
+      }
+
+      db.execute(
+        """--sql
+        INSERT INTO recipes (user_id, product_id, item_id, item_amount)
+        VALUES (:userId, :productId, :itemId, :itemAmount)
+        """, (recipe)
+      )
+
+      db.commit()
 
 def form_factory(request: Request, table_name: str, custom_fields: dict | list, exclude: list = ['id'], validate: True|False = False) -> dict:
   """
