@@ -36,11 +36,13 @@
         </td>
         <td>{{ item['quantity_alert'] }}</td>
         <td>
-          <div class="d-flex justify-content-evenly">
-            <a href="{{ url_for('items.update_item', id=item['id']) }}" role="button" class="btn btn-primary">Edit</a>
+          <div class="d-flex justify-content-center">
+            <a href="{{ url_for('items.update_item', id=item['id']) }}" role="button" class="btn btn-primary me-2">
+              <i class="bi bi-pencil-square"></i>
+            </a>
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{item['id'] }}">
-              Delete
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ item['id'] }}">
+              <i class="bi bi-trash"></i>
             </button>
           </div>
         </td>
@@ -75,7 +77,9 @@
     <tfoot>
       <tr>
         <td colspan="8">
-          <a href="{{ url_for('items.create_item') }}" role="button" class="btn btn-primary">Add Item</a>
+          <a href="{{ url_for('items.create_item') }}" role="button" class="btn btn-success">
+            <i class="bi bi-file-earmark-plus"></i> <span>Add Item</span>
+            </a>
           <a href="{{ url_for('items.history') }}" role="button" class="btn btn-primary">History</a>
           <a href="{{ url_for('items.log') }}" role="button" class="btn btn-primary">Log</a>
         </td>
