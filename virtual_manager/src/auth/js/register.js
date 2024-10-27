@@ -12,7 +12,7 @@ $(document).ready(function () {
   let q = null
   
   function fetch_username_status() {
-    $.get(`${window.location.href}?q=${q}`, function (status){
+    $.get(`${window.location.origin}/auth/check-username?q=${q}`, function (status){
       flag = JSON.parse(status)
       display_username_status()
     })
