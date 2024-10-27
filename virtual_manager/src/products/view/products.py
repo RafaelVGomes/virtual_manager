@@ -1,7 +1,11 @@
+from ast import pattern
+import re
+import requests
+
 from flask import Blueprint, flash, redirect, render_template, request, g, url_for
 
 from virtual_manager.db import get_db
-from virtual_manager.helpers import updated_columns
+from virtual_manager.helpers import form_handle, updated_columns
 from virtual_manager.src.auth.view.auth import login_required
 
 
@@ -21,72 +25,63 @@ def overview():
 @login_required
 def create_product():
   """Create product"""
+  db = get_db()
+  items = db.execute("SELECT id, item_name FROM items WHERE user_id = ?;", (g.user['id'],)).fetchall()
+  
   if request.method == "POST":
-    data = {
+    form = {
       'product_name': request.form.get("product_name"),
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),
       'price': request.form.get("price", type=float),
       'has_recipe': request.form.get("has_recipe", type=int),
-      'inline_total': request.form.get("inlineFormsTotal", type=int),
       'errors': 0
     }
 
-    if not data['product_name']:
+    if not form['product_name']:
       flash("Please enter an product name.", 'product_name')
-      data['errors'] += 1
+      form['errors'] += 1
 
-    if not data['amount']:
+    if not form['amount']:
       flash("Please enter an amount.", 'amount')
-      data['errors'] += 1
+      form['errors'] += 1
       
-    if not data['measure']:
+    if not form['measure']:
       flash("Please select a measure.", 'measure')
-      data['errors'] += 1
-    elif data['measure'] not in ['Kg', 'L', 'Unit']:
+      form['errors'] += 1
+    elif form['measure'] not in ['Kg', 'L', 'Unit']:
       flash("Invalid measure.", 'measure')
-      data['errors'] += 1
+      form['errors'] += 1
 
-    if not data['quantity_alert']:
+    if not form['quantity_alert']:
       flash("Please enter a quantity alert.", 'quantity_alert')
-      data['errors'] += 1
+      form['errors'] += 1
 
-    if not data['price']:
+    if not form['price']:
       flash("Please enter a price.", 'price')
-      data['errors'] += 1
+      form['errors'] += 1
 
-    if data['has_recipe'] not in [0, 1]:
+    if form['has_recipe'] not in [0, 1]:
       flash("Invalid option.", 'has_recipe')
-      data['errors'] += 1
+      form['errors'] += 1
 
-    if data['has_recipe'] == 1 and not data['sale_price']:
-      flash("Please enter a sale price.", 'sale_price')
-      data['errors'] += 1
+    # if form['has_recipe'] == 1 and not form['recipes']:
+    #   flash("Please choose recipe items.", 'has_recipe')
+    #   form['errors'] += 1
 
-    
-    if data['errors']:
-      return render_template("create-product.html", data=data)
+
+    if form['errors']:
+      return render_template("create-product.html", data=form, items=items)
     else:
-      db = get_db()
-      data['user_id'] = g.user['id']
+      form['user_id'] = g.user['id']
       
       prod_id = db.execute(
         """--sql
         INSERT INTO products (user_id, product_name, amount, measure, quantity_alert, price, has_recipe)
         VALUES (:user_id, :product_name, :amount, :measure, :quantity_alert, :price, :has_recipe);
-        """, (data)
+        """, (form)
       ).lastrowid
-      
-      # for i in range(data['inline_total']):
-      #   inline_forms = request.form.getlist(f"recipe_items_{i}")
-      #   id_and_name = inline_forms[0].split(',')
-      #   item_id = id_and_name[0]
-      #   item_name = id_and_name[1]
-      #   item_amount = inline_forms[1]
-
-      #   db.execute("INSERT INTO recipes (product_id, item_id, item_name, amount) VALUES (?,?,?,?)", prod_id, item_id, item_name, item_amount)
-      #   db.execute("UPDATE items SET amount = items.amount - ? WHERE id = ?", round(data['amount'] * item_amount, 1), item_id)
 
       # db.execute(
       #   """--sql
@@ -107,20 +102,25 @@ def create_product():
       # db.execute("UPDATE users SET cash = users.cash - ? WHERE id = ?", (purchase_value, data['user_id']))
 
       db.commit()
+      
+      if form['has_recipe'] == 1:
+        form_handle(prod_id, request)
+      
       return redirect(url_for("products.create_product"))
     
-  return render_template("create-product.html")
+  return render_template("create-product.html", items=items)
 
 
-@bp.route("/update-item/<int:id>", methods=["GET", "POST"])
+@bp.route("/update-product/<int:id>", methods=["GET", "POST"])
 @login_required
-def update_item(id):
-  """Modify item"""
+def update_product(id):
+  """Modify product"""
   db = get_db()
-  item = db.execute("SELECT * FROM items WHERE id = ?;", (id,)).fetchone()
+  product = db.execute("SELECT * FROM products WHERE id = ? AND user_id = ?;", (id, g.user['id'])).fetchone()
 
   if request.method == "POST":
-    data = {
+    form = {
+      'id': id,
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),
@@ -130,78 +130,72 @@ def update_item(id):
       'errors': 0
     }
     
-    if not data['amount']:
+    if not form['amount']:
       flash("Please enter a amount", 'amount')
-      data['errors'] += 1
+      form['errors'] += 1
     
-    if not data['measure']:
+    if not form['measure']:
       flash("Please choose a measure", 'measure')
-      data['errors'] += 1
+      form['errors'] += 1
     
-    if not data['quantity_alert']:
+    if not form['quantity_alert']:
       flash("Please enter an alert quantity", 'quantity_alert')
-      data['errors'] += 1
+      form['errors'] += 1
     
-    if not data['price']:
+    if not form['price']:
       flash("Please enter a price", 'price')
-      data['errors'] += 1
+      form['errors'] += 1
     
-    if data['is_product'] == 1 and not data['sale_price']:
-      flash("Please enter a sale price", 'sale_price')
-      data['errors'] += 1
-
-    if data['errors']:
-      return render_template("update-item.html", item=data)
+    if form['errors']:
+      return render_template("update-product.html", product=form)
     else:
-      data['id'] = id
+      form['id'] = id
       db.execute(
         """--sql
-        UPDATE items SET amount = :amount, price = :price, quantity_alert = :quantity_alert, measure = :measure, is_product = :is_product, sale_price = :sale_price WHERE id = :id;
-        """, (data)
+        UPDATE products SET amount = :amount, price = :price, quantity_alert = :quantity_alert, measure = :measure, has_recipe = :has_recipe WHERE id = :id;
+        """, (form)
       )
 
-      data['user_id'] = g.user['id']
-      data['item_name'] = item['item_name']
-      for col, values in updated_columns(item, data).items():
-        data['item_field'] = col
-        data['old_value'] = values['old']
-        data['new_value'] = values['new']
+      # form['user_id'] = g.user['id']
+      # form['item_name'] = item['item_name']
+      # for col, values in updated_columns(product, form).items():
+      #   form['item_field'] = col
+      #   form['old_value'] = values['old']
+      #   form['new_value'] = values['new']
 
-        db.execute(
-          """--sql
-          INSERT INTO items_log (user_id, operation, item_name, item_field, old_value, new_value)
-          VALUES (:user_id, 'updated', :item_name, :item_field, :old_value, :new_value);
-          """, (data)
-        )
+      #   db.execute(
+      #     """--sql
+      #     INSERT INTO items_log (user_id, operation, item_name, item_field, old_value, new_value)
+      #     VALUES (:user_id, 'updated', :item_name, :item_field, :old_value, :new_value);
+      #     """, (form)
+      #   )
 
       db.commit()
-      return redirect(url_for("items.overview"))
+      return redirect(url_for("products.overview"))
   
-  return render_template("update-item.html", item=item)
+  return render_template("update-product.html", product=product)
 
 
-@bp.route("/delete-item/<int:id>")
+@bp.route("/delete-product/<int:id>")
 @login_required
-def delete_item(id):
-    """Erase item"""
-    # TODO: control who can delete items
-    data = {}
+def delete_product(id):
+    """Erase product"""
     db = get_db()
 
-    data['user_id'] = g.user['id']
-    data['item_name'] = db.execute("SELECT item_name FROM items WHERE id = ?", (id,)).fetchone()['item_name']
+    user_id = g.user['id']
+    # item_name = db.execute("SELECT product_name FROM products WHERE id = ? AND user_id = ?", (id, user_id)).fetchone()['product_name']
     
-    db.execute("DELETE FROM items WHERE id = ?", (id,))
-    
-    db.execute(
-        """--sql
-        INSERT INTO items_log (user_id, operation, item_name)
-        VALUES (:user_id, 'deleted', :item_name);
-        """, (data)
-      )
+    db.execute("DELETE FROM products WHERE id = ? AND user_id = ?", (id, user_id))
+    # TODO
+    # db.execute(
+    #   """--sql
+    #   INSERT INTO products_log (user_id, operation, item_name)
+    #   VALUES (?,?,?);
+    #   """, (user_id, 'deleted', item_name)
+    # )
     
     db.commit()
-    return redirect(url_for("items.overview"))
+    return redirect(url_for("products.overview"))
 
 @bp.route("/history")
 @login_required
@@ -210,7 +204,7 @@ def history():
   db = get_db()
   history = db.execute(
     """--sql
-      SELECT DATETIME(h.date, 'localtime') as date, u.username, h.item_name, h.trade, h.price, h.amount, h.measure, h.total FROM users as u, items_history as h WHERE h.user_id = u.id AND u.id = ?;
+      SELECT DATETIME(h.date, 'localtime') as date, u.username, h.item_name, h.trade, h.price, h.amount, h.measure, h.total FROM users u, items_history h WHERE h.user_id = u.id AND u.id = ?;
     """,
     (g.user['id'],)
   ).fetchall()

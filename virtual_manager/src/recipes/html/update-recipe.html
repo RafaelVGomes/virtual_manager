@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Recipe - Update
+{% endblock title %}
+
+{% block main %}
+  {# <script src="{{ url_for('products.static', filename='js/create-product.js')}}"></script> #}
+
+  {# <form action="{{ url_for('recipes.update_recipe', id=recipesData['recipes'][0]['id']) }}" method="POST">
+    <div class="mb-3">
+      <h3 class="mx-auto w-auto">{{ product.product_name }}</h3>
+    </div>
+    <div class="mb-3">
+      <div id="recipeContainer">
+        {% include "create-recipe-inline.html" %}
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-primary" type="submit">Update</button>
+      <a href="{{ url_for('recipes.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form> #}
+  <div class="mb-3">
+    <div id="recipeContainer">
+      {% include "create-recipe-inline.html" %}
+    </div>
+  </div>
+{% endblock main %}

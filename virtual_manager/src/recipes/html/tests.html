@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  TESTS
+{% endblock title %}
+
+{% block main %}
+  {% for product, info in data.items() %}
+    <div>{{ product }} - {{ info.productName|title }}</div>
+    <div>
+      {% for item in info.recipe %}
+        <li class="text-start">
+          {{ item[0]|title }} x{{ item[1] }}
+        </li>
+      {% endfor %}
+      {{ info.recipe|length }}
+    </div>
+  {% endfor %}
+{% endblock main %}

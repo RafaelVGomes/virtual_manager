@@ -36,11 +36,13 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div class="d-flex justify-content-evenly">
-                                <a href="/upd-product/{{ product['id'] }}" role="button" class="btn btn-primary">Edit</a>
+                            <div class="d-flex justify-content-center">
+                                <a href="{{ url_for('products.update_product', id=product['id']) }}" role="button" class="btn btn-primary me-2">
+                                  <i class="bi bi-pencil-square"></i>
+                                </a>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{product['id'] }}">
-                                    Delete
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </td>
@@ -58,7 +60,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                    <a href="/del-product/{{ product['id'] }}" role="button" class="btn btn-danger">Yes</a>
+                                    <a href="{{ url_for('products.delete_product', id=product['id']) }}" role="button" class="btn btn-danger">Yes</a>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +75,9 @@
         <tfoot>
             <tr>
                 <td colspan="8">
-                    <a href="{{ url_for('products.create_product') }}" role="button" class="btn btn-primary">Add product</a>
+                    <a href="{{ url_for('products.create_product') }}" role="button" class="btn btn-success">
+                      <i class="bi bi-file-earmark-plus"></i> <span>Add product</span>
+                    </a>
                 </td>
             </tr>
         </tfoot>

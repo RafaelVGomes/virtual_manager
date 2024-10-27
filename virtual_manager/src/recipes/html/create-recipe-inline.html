@@ -1,0 +1,52 @@
+<link href="{{ url_for('recipes.static', filename='css/create-recipes-inline.css') }}" rel="stylesheet">
+<script type="module" src="{{ url_for('recipes.static', filename='js/create-recipe-inline.js')}}"></script>
+
+{% if recipesData %}
+  <div id="recipesData" hidden>
+    {{ recipesData|tojson}}
+  </div>
+{% endif %}
+
+<div class="container-fluid mb-3" id="inlineFormsContainer">
+  <div class="row align-items-center justify-content-center">
+    <!-- BASE form -->
+    <div class="row align-items-center justify-content-center m-3" id="inlineRecipe0">
+      {% if items %}
+        <input type="hidden" name="recipe0" id="recipeFormId0" value="0">
+        <div class="col-auto form-check align-self-center">
+          <input class="form-check-input" type="checkbox" name="recipe0" id="delRecipe0">
+          <label class="form-check-label" for="delRecipe0"><i class="bi bi-trash"></i></label>
+        </div>
+        <div class="col-sm form-floating align-self-center">
+          <select class="form-select" name="recipe0" id="itemRecipe0" aria-label="Items to add">
+            <option selected>-----------</option>
+            {% for item in items %}
+              <option value="{{ item['id'] }},{{ item['item_name'] }}">{{ item['item_name']|title }}</option>
+            {% endfor %}
+          </select>
+          <label>Items List</label>
+        </div>
+        <div class="col-sm form-floating align-self-start">
+          <input autocomplete="off" class="form-control" name="recipe0" id="itemAmount0" placeholder="Qnt"
+            type="number" step="1" min="0" value="0">
+          <label>Amount</label>
+        </div>
+      {% else %}
+        <select class="form-select" aria-label="Items to add" disabled>
+          <option selected>No items on stock</option>
+        </select>
+      {% endif %}
+    </div>
+    <div class="col-5 border border-primary rounded" id="itemsColumn">
+      <!-- JS insertion -->
+    </div>
+    <input type="hidden" name="recipesIndex" id="recipesIndex" value="0">
+    {# <input type="hidden" name="inlineFormsTotal" id="inlineFormsTotal" value="0">
+    <input type="hidden" name="createdInlineForms" id="createdInlineForms" value="0">
+    <input type="hidden" name="deletedInlineForms" id="deletedInlineForms" value="0"> #}
+    <div class="col-1">
+      <button class="btn btn-success" id="addItemBtn" type="button"><i class="bi bi-plus-lg"></i></button>
+      <button class="btn btn-danger mt-1" id="delItemBtn" type="button" disabled><i class="bi bi-trash"></i></button>
+    </div>
+  </div>
+</div>

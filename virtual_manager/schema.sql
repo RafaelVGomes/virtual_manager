@@ -11,7 +11,6 @@ CREATE TABLE users (
 CREATE INDEX idx_users ON users (id, username, is_active, is_staff);
 
 
-
 CREATE TABLE items (
   id INTEGER PRIMARY KEY,
   user_id INTEGER NOT NULL,
@@ -76,11 +75,14 @@ CREATE INDEX idx_product ON products (id, product_name);
 
 
 CREATE TABLE recipes (
-  product_id INTEGER PRIMARY KEY,
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  product_id INTEGER NOT NULL,
   item_id INTEGER NOT NULL,
-  amount NUMERIC NOT NULL,
+  item_amount NUMERIC NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
   FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_recipes ON recipes (product_id, item_id);
+CREATE INDEX idx_recipes ON recipes (id, user_id, product_id, item_id);

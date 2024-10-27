@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% block title %}
+  Recipe - Create
+{% endblock title %}
+
+{% block main %}
+  {# <link href="{{ url_for('products.static', filename='css/create-product.css') }}" rel="stylesheet"> #}
+  {# <script type="module" src="{{ url_for('products.static', filename='js/create-product.js')}}"></script> #}
+
+  <h4 class="mb-3">Create Recipes</h4>
+
+  {# {% if form %}
+    <div id="form" hidden>
+      {{ form|tojson}}
+    </div>
+  {% endif %} #}
+
+  <form action="{{ url_for('recipes.create_recipe', id=product.id) }}" method="POST">
+    <div class="mb-3">
+      <h4 class="mx-auto w-auto">{{ product.product_name }}</h4>
+    </div>
+    <div class="mb-3">
+      <div id="recipeContainer">
+        {% include "create-recipe-inline.html" %}
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-success" type="submit">Create</button>
+      <a href="{{ url_for('recipes.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+{% endblock main %}
