@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 
-from virtual_manager.helpers import usd, format_field_name
+from virtual_manager.helpers import camelCase, usd, kebab_case
 
 # Configure application
 def create_app(test_config=None):
@@ -11,9 +11,10 @@ def create_app(test_config=None):
       DATABASE=os.path.join(app.instance_path, 'virtual_manager.sqlite'),
     )
 
-    # Custom filter
+    # Custom filters
     app.jinja_env.filters["usd"] = usd
-    app.jinja_env.filters["field"] = format_field_name
+    app.jinja_env.filters["kebab_case"] = kebab_case
+    app.jinja_env.filters["camelCase"] = camelCase
 
     if test_config is None:
       # load the instance config, if it exists, when not testing
@@ -28,19 +29,18 @@ def create_app(test_config=None):
     except OSError:
       pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-      return 'Hello, World!'
-
+    # initialize DB
     from . import db
     db.init_app(app)
 
+    # Package structure -> https://youtu.be/44PvX0Yv368
+    # Blueprints registration
     from virtual_manager import src
     app.register_blueprint(src.index.bp)
     app.add_url_rule('/', endpoint='index')
     app.register_blueprint(src.auth.bp)
     app.register_blueprint(src.items.bp)
     app.register_blueprint(src.products.bp)
+    app.register_blueprint(src.recipes.bp)
 
     return app

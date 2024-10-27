@@ -13,8 +13,10 @@
   "python.analysis.autoImportCompletions": true,
   "cSpell.words": [
     "appcontext",
+    "camelcase",
     "DECLTYPES",
     "executescript",
+    "jsonify",
     "lastrowid",
     "pyfile",
     "werkzeug"
