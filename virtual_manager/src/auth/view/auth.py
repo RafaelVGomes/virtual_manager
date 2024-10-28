@@ -20,14 +20,14 @@ def validate_registration_data(data):
   if not data['username']:
     errors['username'] = 'Username is required.'
   else:
-    # Verifica se o username já está em uso no banco
+    # Verifies if username is taken. (This is a redundant measure.)
     user_exists = db.execute(
       "SELECT username FROM users WHERE username = ?", (data['username'],)
     ).fetchone()
     
     if user_exists:
       errors['username'] = 'Username is already taken.'
-  
+  # Verifies if passwords and confirmation matches.
   if not data['password']:
     errors['password'] = 'Password is required.'
   elif data['password'] != data['confirmation']:
@@ -52,11 +52,12 @@ def load_logged_in_user():
 
 @bp.route('/check-username', methods=('GET',))
 def check_username():
-  q = request.args.get('q')
-  if q:
-    u = get_db().execute("SELECT username FROM users WHERE username = ?", (q.lower(),)).fetchone()
-    if u:
-      return ('false', 'true')[q == u['username']]
+  query = request.args.get('q')
+  
+  if query:
+    username = get_db().execute("SELECT username FROM users WHERE username = ?", (query.lower(),)).fetchone()
+    if username:
+      return ('false', 'true')[query == username['username']]
     else:
       return 'false'
 
@@ -76,32 +77,6 @@ def register():
       for field, message in errors.items():
           flash(message, field)
       return render_template('register.html', data=data)
-    
-    # if not data['username']:
-    #   flash('Username is required.', 'username')
-    #   data['errors'] += 1
-
-    # u = get_db().execute("SELECT username FROM users WHERE username = ?", (data['username'],)).fetchone()
-    # if u:
-    #   u = u['username']
-    
-    # if u == data['username']:
-    #   flash('Username unavailable.', 'username')
-    #   data['errors'] += 1
-    
-    # if not data['password']:
-    #   flash('Password is required.', 'password')
-    #   data['errors'] += 1
-    
-    # if not data['confirmation']:
-    #   flash('Password confirmation is required.', 'confirmation')
-    #   data['errors'] += 1
-    # elif data['password'] != data['confirmation']:
-    #   flash("Password confirmation doesn't match.", 'confirmation')
-    #   data['errors'] += 1
-
-    # if data['errors']:
-    #   return render_template('register.html', data=data)
     
     try:
       db = get_db()
