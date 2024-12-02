@@ -1,7 +1,14 @@
 /* Size for brand */
 nav .navbar-brand
 {
-    font-size: x-large;
+  font-size: x-large;
 }
 
+.toast-container {
+  margin-top: 0; /* Garante que o container inicie no topo */
+}
 
+.toast {
+  min-width: 300px; /* Tamanho mínimo do toast */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombras suaves */
+}
