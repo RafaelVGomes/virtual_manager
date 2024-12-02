@@ -16,7 +16,7 @@ def validate_form(form):
     
   if not form['measure']:
     errors['measure'] = "Please select a measure."
-  elif form['measure'] not in ['kg', 'L', 'Unit']:
+  elif form['measure'] not in ['kg', 'L', 'pcs']:
     errors['measure'] = "Invalid measure."
 
   if not form['quantity_alert']:
@@ -164,46 +164,17 @@ def update_product(id):
 @bp.route("/delete-product/<int:id>")
 @login_required
 def delete_product(id):
-    """Erase product"""
-    db = get_db()
-
-    user_id = g.user['id']
-    # item_name = db.execute("SELECT product_name FROM products WHERE id = ? AND user_id = ?", (id, user_id)).fetchone()['product_name']
-    
+  """Erase product"""
+  db = get_db()
+  user_id = g.user['id']
+  
+  try:
     db.execute("DELETE FROM products WHERE id = ? AND user_id = ?", (id, user_id))
-    # TODO
-    # db.execute(
-    #   """--sql
-    #   INSERT INTO products_log (user_id, operation, item_name)
-    #   VALUES (?,?,?);
-    #   """, (user_id, 'deleted', item_name)
-    # )
-    
+    flash(f"Product deleted.#success", 'messages')
     db.commit()
-    return redirect(url_for("products.overview"))
+  except db.IntegrityError as e:
+    e = str(e)
+    print("Error:", e)
+    flash(f"Product not deleted!#danger", 'messages')
+  return redirect(url_for("products.overview"))
 
-@bp.route("/history")
-@login_required
-def history():
-  """Historic of purchases and sales"""
-  db = get_db()
-  history = db.execute(
-    """--sql
-      SELECT DATETIME(h.date, 'localtime') as date, u.username, h.item_name, h.trade, h.price, h.amount, h.measure, h.total FROM users u, items_history h WHERE h.user_id = u.id AND u.id = ?;
-    """,
-    (g.user['id'],)
-  ).fetchall()
-  return render_template("items-history.html", history=history)
-
-@bp.route("/log")
-@login_required
-def log():
-  """Historic of purchases and sales"""
-  db = get_db()
-  log = db.execute(
-    """--sql
-      SELECT DATETIME(l.date, 'localtime') as date, u.username, l.item_name, l.operation, l.item_field, l.old_value, l.new_value FROM users as u, items_log as l WHERE l.user_id = u.id AND u.id = ?;
-    """,
-    (g.user['id'],)
-  ).fetchall()
-  return render_template("items-log.html", log=log)
