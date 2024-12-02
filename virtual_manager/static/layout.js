@@ -9,14 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
   })
 })
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Inicializa o toast
-  const toastElement = document.getElementById('example-toast');
-  const toast = new bootstrap.Toast(toastElement, {
-    autohide: true, // Faz o toast desaparecer automaticamente
-    delay: 5000     // Define o tempo de exibição (5 segundos)
+// Closes messages toasts after 5 secs
+document.addEventListener('DOMContentLoaded', function () {
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+  var toastList = toastElList.map(function (toastEl) {
+    return new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
   });
-
-  // Exibe o toast
-  toast.show();
+  toastList.forEach(toast => toast.show());
 });
