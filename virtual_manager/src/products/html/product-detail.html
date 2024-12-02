@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% set endpoint = request.endpoint %}
+
+{% if endpoint == 'products.create_product' %}
+  {% set action = 'Create' %}
+{% else %}
+  {% set action = 'Update' %}
+{% endif %}
+
+  
+{% block title %}
+  Product - {{ action }}
+{% endblock title %}
+
+{% block main %}
+  <link href="{{ url_for('products.static', filename='css/product-detail.css') }}" rel="stylesheet">
+  {# <script type="module" src="{{ url_for('products.static', filename='js/product-detail.js')}}"></script> #}
+
+  <h4 class="mb-3">{{ action }} Products</h4>
+  
+  <form action="{{ request.path }}" method="POST">
+    <div class="mb-3">
+      <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="product_name" name="product_name"
+        placeholder="Product name" type="text" value="{{ form.product_name if form }}">
+      {{ error('product_name') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="amount" name="amount" placeholder="Amount"
+        type="number" step="0.1" min="0" value="{{ form.amount if form }}">
+      {{ error('amount') }}
+    </div>
+    <div class="mb-3">
+      <select class="form-select mx-auto w-auto" name="measure" id="measure" aria-label="Unit of measurement">
+        <option value="" {% if form is not defined or form.measure == "" %} selected {% endif %}>Unit of measurement</option>
+        <option value="kg" {% if form is defined and form.measure == "kg" %} selected {% endif %}>kg</option>
+        <option value="L" {% if form is defined and form.measure == "L" %} selected {% endif %}>L</option>
+        <option value="Unit" {% if form is defined and form.measure == "Unit" %} selected {% endif %}>Unit</option>
+      </select>
+      {{ error('measure') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="quantity_alert" name="quantity_alert"
+        placeholder="Quantity alert" type="number" step="0.1" min="0" value="{{ form.quantity_alert if form }}">
+      {{ error('quantity_alert') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="price" name="price" placeholder="Price"
+        type="number" step="0.01" min="0" value="{{ form.price if form }}">
+      {{ error('price') }}
+    </div>
+    <p>Does this product have a recipe?</p>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="has_recipe" id="has_recipe0" value="0"
+        {% if form is defined and form.has_recipe == 0 or not form %}
+          checked
+        {% endif %}
+      >
+      <label class="form-check-label" for="has_recipe0">
+        No
+      </label>
+    </div>
+    <div class="form-check form-check-inline mb-3">
+      <input class="form-check-input" type="radio" name="has_recipe" id="has_recipe1" value="1"
+        {% if form is defined and form.has_recipe == 1 %}
+          checked
+        {% endif %}
+      >
+      <label class="form-check-label" for="has_recipe1">
+        Yes
+      </label>
+    </div>
+    {{ error('has_recipe') }}
+    <div id="recipeContainer">
+      {% include "create-recipe-inline.html" %}
+    </div>
+    <div>
+      <button class="btn btn-success" type="submit">{{ action }}</button>
+      <a href="{{ url_for('products.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+{% endblock main %}
