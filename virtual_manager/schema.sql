@@ -5,7 +5,7 @@ CREATE TABLE users (
   hash TEXT NOT NULL,
   is_active INTEGER DEFAULT 1
 );
-CREATE INDEX idx_users ON users (id, username, is_active, is_staff);
+CREATE INDEX idx_users ON users (id, username, is_active);
 
 
 CREATE TABLE items (
