@@ -32,11 +32,11 @@
       {{ error('amount') }}
     </div>
     <div class="mb-3">
-      <select class="form-select mx-auto w-auto" name="measure" id="measure" aria-label="Unit of measurement">
-        <option value="" {% if form is not defined or form.measure == "" %} selected {% endif %}>Unit of measurement</option>
+      <select class="form-select mx-auto w-auto" name="measure" id="measure" aria-label="pcs of measurement">
+        <option value="" {% if form is not defined or form.measure == "" %} selected {% endif %}>pcs of measurement</option>
         <option value="kg" {% if form is defined and form.measure == "kg" %} selected {% endif %}>kg</option>
         <option value="L" {% if form is defined and form.measure == "L" %} selected {% endif %}>L</option>
-        <option value="Unit" {% if form is defined and form.measure == "Unit" %} selected {% endif %}>Unit</option>
+        <option value="pcs" {% if form is defined and form.measure == "pcs" %} selected {% endif %}>pcs</option>
       </select>
       {{ error('measure') }}
     </div>
