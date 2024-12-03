@@ -13,24 +13,24 @@ def login_required(view):
 
   return wrapped_view
 
-def validate_registration_data(data):
+def validate_registration_data(form):
   errors = {}
   db = get_db()
   
-  if not data['username']:
+  if not form['username']:
     errors['username'] = 'Username is required.'
   else:
     # Verifies if username is taken. (This is a redundant measure.)
     user_exists = db.execute(
-      "SELECT username FROM users WHERE username = ?", (data['username'],)
+      "SELECT username FROM users WHERE username = ?", (form['username'],)
     ).fetchone()
     
     if user_exists:
       errors['username'] = 'Username is already taken.'
   # Verifies if passwords and confirmation matches.
-  if not data['password']:
+  if not form['password']:
     errors['password'] = 'Password is required.'
-  elif data['password'] != data['confirmation']:
+  elif form['password'] != form['confirmation']:
     errors['confirmation'] = "Password confirmation doesn't match."
   
   return errors
@@ -75,7 +75,7 @@ def register():
 
     if errors:
       for field, message in errors.items():
-          flash(message, field)
+        flash(message, field)
       return render_template('register.html', data=data)
     
     try:

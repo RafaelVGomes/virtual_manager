@@ -6,20 +6,29 @@
   "emmet.includeLanguages": {
       "jinja-html": "html"
   },
-  "material-icon-theme.languages.associations": {
-      "jinja-html": "html"
-  },
+  // "material-icon-theme.languages.associations": {
+  //     "jinja-html": "html"
+  // },
   "python.analysis.typeCheckingMode": "off",
   "python.analysis.autoImportCompletions": true,
   "cSpell.words": [
     "appcontext",
+    "autofocus",
+    "autohide",
     "camelcase",
     "DECLTYPES",
+    "endfor",
+    "endmacro",
+    "endwith",
+    "errorname",
     "está",
     "executescript",
     "jsonify",
     "lastrowid",
     "pyfile",
+    "sqlite",
+    "tbody",
+    "tojson",
     "Verifica",
     "werkzeug"
   ],
