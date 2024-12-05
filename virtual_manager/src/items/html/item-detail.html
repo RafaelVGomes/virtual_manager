@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% set endpoint = request.endpoint %}
+
+{% if endpoint == 'items.create_item' %}
+  {% set action = 'Create' %}
+{% else %}
+  {% set action = 'Update' %}
+{% endif %}
+
+{% block title %}
+  Item - {{ action }}
+{% endblock title %}
+
+{% block main %}
+  <script src="{{ url_for('items.static', filename='js/item-detail.js')}}"></script>
+
+  <h4 class="mb-3">{{ action }} Items</h4>
+
+  <form action="{{ request.path }}" method="POST">
+    <div class="mb-3">
+      <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="item_name" name="item_name"
+        placeholder="Item name" type="text" value="{{ form.get('item_name', '') }}">
+      {{ error('item_name') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="amount" name="amount" placeholder="Amount"
+        type="number" step="0.1" min="0" value="{{ form.get('amount', '') }}">
+      {{ error('amount') }}
+    </div>
+    <div class="mb-3">
+      {% include "partials/forms/measure-units.html" %}
+      {{ error('measure') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="quantity_alert" name="quantity_alert"
+        placeholder="Quantity alert" type="number" step="0.1" min="0" value="{{ form.get('quantity_alert', '') }}">
+      {{ error('quantity_alert') }}
+    </div>
+    <div class="mb-3">
+      <input autocomplete="off" class="form-control mx-auto w-auto" id="price" name="price" placeholder="Price"
+        type="number" step="0.01" min="0" value="{{ form.get('price', '') }}">
+      {{ error('price') }}
+    </div>
+    <div class="mb-3">
+      <button class="btn btn-success" type="submit">{{ action }}</button>
+      <a href="{{ url_for('items.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+{% endblock main %}

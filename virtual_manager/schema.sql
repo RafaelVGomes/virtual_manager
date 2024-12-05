@@ -17,7 +17,6 @@ CREATE TABLE items (
   quantity_alert INTEGER NOT NULL DEFAULT 0,
   price NUMERIC  DEFAULT 0,
   is_product INTEGER NOT NULL DEFAULT 0,
-  sale_price NUMERIC DEFAULT "-",
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE INDEX idx_items ON items (id, item_name, is_product);
@@ -31,7 +30,8 @@ CREATE TABLE products (
   measure TEXT NOT NULL,
   quantity_alert INTEGER,
   price NUMERIC NOT NULL,
-  has_recipe INTEGER NOT NULL
+  has_recipe INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE INDEX idx_product ON products (id, product_name);
 

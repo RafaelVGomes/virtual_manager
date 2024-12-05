@@ -5,6 +5,11 @@
 {% endblock title %}
 
 {% block main %}
+  <div>
+    <a href="{{ url_for('items.create_item') }}" role="button" class="btn btn-success">
+      <i class="bi bi-file-earmark-plus"></i> <span>Add Item</span>
+    </a>
+  </div>
   <table class="table table-hover align-middle">
     <thead>
       <tr>
@@ -12,78 +17,66 @@
         <th>Amount</th>
         <th>Measure</th>
         <th>Purchase Price</th>
-        <th>Is Product?</th>
-        <th>Sale Price</th>
         <th>Quantity Alert</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       {% if items %}
-      {% for item in items %}
-      <tr>
-        <td>{{ item['item_name']|title }}</td>
-        <td>{{ item['amount'] }}</td>
-        <td>{{ item['measure'] }}</td>
-        <td id="{{ item['item_name'] }}-price">
-          {{ item['price']|usd }}
-        </td>
-        <td>
-          {{ 'Yes' if item['is_product'] else 'No' }}
-        </td>
-        <td id="{{ item['item_name'] }}-salePrice">
-          {{ item['sale_price']|usd }}
-        </td>
-        <td>{{ item['quantity_alert'] }}</td>
-        <td>
-          <div class="d-flex justify-content-center">
-            <a href="{{ url_for('items.update_item', id=item['id']) }}" role="button" class="btn btn-primary me-2">
-              <i class="bi bi-pencil-square"></i>
-            </a>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ item['id'] }}">
-              <i class="bi bi-trash"></i>
-            </button>
+        {% for item in items %}
+          <tr>
+            <td>{{ item['item_name']|title }}</td>
+            <td>{{ item['amount'] }}</td>
+            <td>{{ item['measure'] }}</td>
+            <td id="{{ item['item_name'] }}-price">
+              {{ item['price']|usd }}
+            </td>
+            <td>{{ item['quantity_alert'] }}</td>
+            <td>
+              <div class="d-flex justify-content-center">
+                <a href="{{ url_for('items.update_item', id=item['id']) }}" role="button" class="btn btn-primary me-2">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ item['id'] }}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <!-- Modals -->
+          <div class="modal fade" id="delete-{{ item['id'] }}" tabindex="-1" aria-labelledby="deleteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel"><i
+                      class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body fs-6">
+                  <p>
+                    Are you sure you want to delete the product "<strong>{{ item['item_name']|title }}</strong>"?
+                  </p>
+                  <small class="fw-bold text-danger">
+                    This action cannot be undone.
+                  </small>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  <form action="{{ url_for('items.delete_item', id=item['id']) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
-        </td>
-      </tr>
-      <!-- Modals -->
-      <div class="modal fade" id="delete-{{ item['id'] }}" tabindex="-1" aria-labelledby="deleteModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel"><i
-                  class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body fs-6">
-              Do you want to delete the item "{{ item['item_name']|title }}"?
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-              <a href="{{ url_for('items.delete_item', id=item['id']) }}" role="button" class="btn btn-danger">Yes</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
+        {% endfor %}
       {% else %}
-      <tr>
-        <td colspan="8">Add some items</td>
-      </tr>
+        <tr>
+          <td colspan="8">Add some items</td>
+        </tr>
       {% endif %}
     </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="8">
-          <a href="{{ url_for('items.create_item') }}" role="button" class="btn btn-success">
-            <i class="bi bi-file-earmark-plus"></i> <span>Add Item</span>
-            </a>
-          <a href="{{ url_for('items.history') }}" role="button" class="btn btn-primary">History</a>
-          <a href="{{ url_for('items.log') }}" role="button" class="btn btn-primary">Log</a>
-        </td>
-      </tr>
-    </tfoot>
   </table>
 {% endblock main %}

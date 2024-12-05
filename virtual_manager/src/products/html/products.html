@@ -1,85 +1,92 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Products
+Products
 {% endblock title %}
 
 {% block main %}
-    <table class="table table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Amount</th>
-                <th>Measure</th>
-                <th>Sale Price</th>
-                <th>Quantity Alert</th>
-                <th>Has Recipe?</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if products %}
-                {% for product in products %}
-                    <tr>
-                        <td>{{ product['product_name']|title }}</td>
-                        <td>{{ product['amount']  }}</td>
-                        <td>{{ product['measure']  }}</td>
-                        <td id="{{ product['product_name'] }}-price">
-                            {{ product['price']|usd   }}
-                        </td>
-                        <td>{{ product['quantity_alert']  }}</td>
-                        <td>
-                            {% if product['has_recipe'] == 0 %}
-                                No
-                            {% else %}
-                                Yes
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                                <a href="{{ url_for('products.update_product', id=product['id']) }}" role="button" class="btn btn-primary me-2">
-                                  <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{product['id'] }}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Modals -->
-                    <div class="modal fade" id="delete-{{ product['id'] }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body fs-6">
-                                    Do you want to delete the product "{{ product['product_name']|title }}"?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                    <a href="{{ url_for('products.delete_product', id=product['id']) }}" role="button" class="btn btn-danger">Yes</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="8">Add some products</td>
-                </tr>
-            {% endif %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="8">
-                    <a href="{{ url_for('products.create_product') }}" role="button" class="btn btn-success">
-                      <i class="bi bi-file-earmark-plus"></i> <span>Add product</span>
-                    </a>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+  <div class="'mb-3">
+    <a href="{{ url_for('products.create_product') }}" role="button" class="btn btn-success">
+      <i class="bi bi-file-earmark-plus"></i> <span>Add product</span>
+    </a>
+  </div>
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Amount</th>
+        <th>Measure</th>
+        <th>Sale Price</th>
+        <th>Quantity Alert</th>
+        <th>Has Recipe?</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if products %}
+        {% for product in products %}
+          <tr>
+            <td>{{ product['product_name']|title }}</td>
+            <td>{{ product['amount'] }}</td>
+            <td>{{ product['measure'] }}</td>
+            <td id="{{ product['product_name'] }}-price">
+              {{ product['price']|usd }}
+            </td>
+            <td>{{ product['quantity_alert'] }}</td>
+            <td>
+              {% if product['has_recipe'] == 0 %}
+                No
+              {% else %}
+                Yes
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex justify-content-center">
+                <a href="{{ url_for('products.update_product', id=product['id']) }}" role="button"
+                  class="btn btn-primary me-2">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                  data-bs-target="#delete-{{product['id'] }}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <!-- Modals -->
+          <div class="modal fade" id="delete-{{ product['id'] }}" tabindex="-1" aria-labelledby="deleteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel"><i
+                      class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body fs-6">
+                  <p>
+                    Are you sure you want to delete the product "<strong>{{ product['product_name']|title }}</strong>"?
+                  </p>
+                  <small class="fw-bold text-danger">
+                    This action cannot be undone.
+                  </small>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  <form action="{{ url_for('products.delete_product', id=product['id']) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="8">Add some products</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
 {% endblock main %}
