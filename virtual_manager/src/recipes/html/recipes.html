@@ -14,22 +14,22 @@
     </thead>
     <tbody>
       {# TODO: refactory variables to new 'data' format  #}
-      {% if data %}
-        {% for product, info in data.items() %}
+      {% if recipes %}
+        {% for recipe in recipes %}
           <tr>
             <td>
-              <div class="accordion accordion-flush" id="{{ info.productName|kebab_case }}-{{ product }}-accordion">
+              <div class="accordion accordion-flush" id="{{ recipe.product_name|kebab_case }}-accordion">
                 <div class="accordion-item">
                   <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ info.productName|kebab_case }}-{{ product }}" aria-expanded="false" aria-controls="{{ info.productName|kebab_case }}"-{{ product }}>
-                      {{ info.productName|title }}
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ recipe.product_name|kebab_case }}" aria-expanded="false" aria-controls="{{ recipe.product_name|kebab_case }}">
+                      {{ recipe.product_name|title }}
                     </button>
                   </h2>
-                  <div id="{{ info.productName|kebab_case }}-{{ product }}" class="accordion-collapse collapse">
+                  <div id="{{ recipe.product_name|kebab_case }}" class="accordion-collapse collapse">
                     <div class="accordion-body">
-                      {% if info.recipe|length > 0 %}
-                        {% for item in info.recipe %}
-                          <li class="text-start">{{ item[0]|title }} x{{ item[1] }}</li>
+                      {% if recipe.items_list|length > 0 %}
+                        {% for item_name, item_amount in recipe.items_list.items() %}
+                          <li class="text-start">{{ item_name|title }} x{{ item_amount }}</li>
                         {% endfor %}
                       {% else %}
                         <li class="text-start">No recipe</li>
@@ -41,24 +41,24 @@
             </td>
             <td>
               <div class="d-flex justify-content-center">
-                {% if info.recipe|length == 0 %}
-                  <a href="{{ url_for('recipes.create_recipe', id=product) }}" role="button" class="btn btn-success me-2">
+                {% if recipe.items_list|length == 0 %}
+                  <a href="{{ url_for('recipes.create_recipe', product_id=recipe.product_id) }}" role="button" class="btn btn-success me-2">
                     <i class="bi bi-file-earmark-plus"></i>
                   </a>
                 {% else %}
-                  <a href="{{ url_for('recipes.update_recipe', id=product) }}" role="button" class="btn btn-primary me-2">
+                  <a href="{{ url_for('recipes.update_recipe', recipe_id=recipe.id) }}" role="button" class="btn btn-primary me-2">
                     <i class="bi bi-pencil-square"></i>
                   </a>
                 {% endif %}
                 <!-- Modal trigger button -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ info.productName|kebab_case }}-{{ product }}" {% if info.recipe|length == 0 %} disabled {% endif %}>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ recipe.product_name|kebab_case }}" {% if recipe.items_list|length == 0 %} disabled {% endif %}>
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <!-- Modals -->
-          <div class="modal fade" id="delete-{{ info.productName|kebab_case }}-{{ product }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal fade" id="delete-{{ recipe.product_name|kebab_case }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -66,14 +66,14 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body fs-6">
-                  <p class="text-start">Do you want to delete "{{ info.productName|title }}'s" whole recipe?</p>
-                  {% for item in info.recipe %}
-                    <li class="text-start">{{ item[0]|title }} x{{ item[1] }}</li>
+                  <p class="text-start">Do you want to delete "{{ recipe.product_name|title }}'s" whole recipe?</p>
+                  {% for item_name, item_amount in recipe.items_list.items() %}
+                    <li class="text-start">{{ item_name|title }} x{{ item_amount }}</li>
                   {% endfor %}
                 </div>
                 <div class="modal-footer">
-                  <form action="{{ url_for('recipes.delete_recipe') }}" method="POST">
-                    <input type="hidden" name="recipe_ids" id="recipe_ids-{{ loop.index }}" value="{{ info.recipe_ids }}">
+                  <form action="{{ url_for('recipes.delete_recipe', recipe_id=recipe.id) }}" method="POST">
+                    <input type="hidden" name="recipe_ids" id="recipe_ids-{{ loop.index }}" value="{{ recipe.id }}">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                     <button type="submit" class="btn btn-danger">Yes</button>
                   </form>
