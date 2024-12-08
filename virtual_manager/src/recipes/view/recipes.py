@@ -53,9 +53,9 @@ def overview():
     FROM products p
     LEFT JOIN recipes r ON r.product_id = p.id AND r.user_id = ?
     LEFT JOIN items i ON r.item_id = i.id
-    WHERE p.has_recipe = 1 AND p.user_id = r.user_id
+    WHERE p.has_recipe = 1 AND p.user_id = ?
     GROUP BY p.id, p.product_name;
-    """, (g.user['id'],)
+    """, (g.user['id'], g.user['id'])
   ).fetchall()
 
   recipes = []
