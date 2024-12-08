@@ -9,20 +9,22 @@ from virtual_manager.src.auth.view.auth import login_required
 
 def form_handle(product_id, request):
   recipes = []
-  recipe_names_pattern = re.compile(r"recipe(?!0)\d+")
+  pattern = re.compile(r"^recipe(\d+)$")
   
   for key in request.form.keys():
-    if recipe_names_pattern.match(key):
-      values = request.form.getlist(key)
-      
+    match = pattern.match(key)
+    if match:
+      index = match.group(1)
+      values = request.form.getlist(f"recipe{index}")
+      print('VALUES:', values)
+    
       recipes.append({
-        "userId": int(g.user['id']),
-        "productId": int(product_id),
-        "recipeId": int(values[0]),
-        "itemId": int(values[1].split(",")[0]),
-        "itemAmount": int(values[2])
+        "id": int(values[0]),
+        "user_id": int(g.user['id']),
+        "product_id": int(product_id),
+        "item_id": int(values[1].split(",")[0]),
+        "item_amount": int(values[2])
       })
-
   return recipes
 
 bp = Blueprint('recipes', __name__, url_prefix='/recipes', template_folder='../html', static_folder='../../recipes', static_url_path='/')
@@ -35,14 +37,24 @@ def overview():
   db_recipes = db.execute(
     """--sql
     SELECT
-      r.id,
+      p.id AS product_id,
       p.product_name,
-      json_group_object(i.item_name, r.item_amount) AS items_list
-    FROM recipes r
-    INNER JOIN products p ON r.product_id = p.id
-    INNER JOIN items i ON r.item_id = i.id
-    WHERE r.user_id = ?
-    GROUP BY p.product_name;
+      json_group_array(
+        CASE
+          WHEN r.id IS NOT NULL THEN
+            json_object(
+              'recipe_id', r.id,
+              'name', i.item_name,
+              'recipe_amount', r.item_amount
+            )
+          ELSE NULL
+        END
+      ) AS items_list
+    FROM products p
+    LEFT JOIN recipes r ON r.product_id = p.id AND r.user_id = ?
+    LEFT JOIN items i ON r.item_id = i.id
+    WHERE p.has_recipe = 1
+    GROUP BY p.id, p.product_name;
     """, (g.user['id'],)
   ).fetchall()
 
@@ -52,7 +64,7 @@ def overview():
     recipe = {}
     for k in db_recipe.keys():
       if k == 'items_list':
-        recipe[k] = json.loads(db_recipe['items_list'])
+        recipe[k] = json.loads(db_recipe[k])
       else:
         recipe[k] = db_recipe[k]
 
@@ -65,10 +77,9 @@ def overview():
 @login_required
 def create_recipe(product_id):
   """Create recipes"""
-  # TODO: Design GET and POST logic 
   db = get_db()
   product = db.execute("""--sql
-    SELECT product_name, id FROM products
+    SELECT id, product_name FROM products
     WHERE has_recipe = 1 AND user_id = ? AND id = ?;
   """, (g.user['id'], product_id)).fetchone()
   
@@ -76,53 +87,97 @@ def create_recipe(product_id):
     SELECT id, item_name FROM items
     WHERE user_id = ? ORDER BY item_name ASC;
   """, (g.user['id'],)).fetchall()
-  
+
+  recipes = []
+
   if request.method == "POST":
-    recipe = form_handle(product_id, request)
+    recipes = form_handle(product_id, request)
+    print('CREATE:', recipes)
 
-    db.execute(
-        """--sql
-        INSERT INTO recipes (user_id, product_id, item_id, item_amount)
-        VALUES (:userId, :productId, :itemId, :itemAmount)
-        """, (recipe)
-      )
+    try:
+      for recipe in recipes:
+        db.execute(
+          """--sql
+          INSERT INTO recipes (user_id, product_id, item_id, item_amount)
+          VALUES (:user_id, :product_id, :item_id, :item_amount)
+          """, recipe
+        )
+      db.commit()
 
-    db.commit()
+      flash(f"Recipe created!#success", 'messages')
+      return redirect(url_for("recipes.overview"))
+    except db.IntegrityError as e:
+      e = str(e)
+      print("Error:", e)
+      flash(f"Recipe not created!#danger", 'messages')
 
-  return render_template(f"create-recipe.html", product=product, items=items)
-# TODO
-@bp.route("/update-recipe/<int:recipe_id>", methods=["GET", "POST"])
+      return render_template("recipe-detail.html", product=product, items=items, recipes=recipes)
+
+  return render_template("recipe-detail.html", product=product, items=items)
+
+@bp.route("/update-recipe/<int:product_id>", methods=["GET", "POST"])
 @login_required
-def update_recipe(recipe_id):
+def update_recipe(product_id):
   db = get_db()
-  items = db.execute("SELECT * FROM items WHERE user_id = ?;", (g.user['id'],)).fetchall()
-  prod_id = db.execute("SELECT product_id FROM recipes WHERE user_id = ? AND id = ?;", (g.user['id'], recipe_id)).fetchone()['product_id']
-  product = db.execute("SELECT product_name FROM products WHERE user_id = ? AND id = ?;", (g.user['id'], prod_id)).fetchone()
-  recipes = db.execute("SELECT * FROM recipes WHERE user_id = ? AND product_id = ?;", (g.user['id'], prod_id)).fetchall()
-  recipesData = {
-    'recipes': []
-  }
-
-  for i in range(0, len(recipes)):
-    item = {
-      f"recipeId": i
-    }
-
-    for recipe in recipes[i].keys():
-      item[recipe] = recipes[i][recipe]
-    recipesData['recipes'].append(item)
+  product = db.execute("""--sql
+    SELECT id, product_name FROM products
+    WHERE has_recipe = 1 AND user_id = ? AND id = ?;
+  """, (g.user['id'], product_id)).fetchone()
   
-  print(recipesData['recipes'])
+  items = db.execute("""--sql
+    SELECT id, item_name FROM items
+    WHERE user_id = ? ORDER BY item_name ASC;
+  """, (g.user['id'],)).fetchall()
 
+  db_recipes = db.execute("""--sql
+    SELECT id, item_id, item_amount FROM recipes
+    WHERE user_id = ? AND product_id = ?;
+  """, (g.user['id'], product_id)).fetchall()
 
+  recipes = []
+  for recipe in db_recipes:
+    recipes.append(dict(recipe))
+  
   if request.method == "POST":
-    pass
+    recipes = form_handle(product_id, request)
+    print('UPDATE:', recipes)
 
-  return render_template(f"update-recipe.html", product=product, items=items, recipesData=recipesData) # , recipesData=recipesData
+    try:
+      for recipe in recipes:
+        if recipe['id'] > 0:
+          db.execute(
+            """--sql
+            UPDATE recipes
+              SET 
+                item_id = :item_id,
+                item_amount = :item_amount
+              WHERE id = :id
+            """, recipe
+          )
+        else:
+          db.execute(
+          """--sql
+          INSERT INTO recipes (user_id, product_id, item_id, item_amount)
+          VALUES (:user_id, :product_id, :item_id, :item_amount)
+          """, recipe
+        )
+      db.commit()
 
-@bp.route("/delete-recipe/<int:recipe_id>", methods=["POST"])
+      flash(f"Recipe updated!#success", 'messages')
+      return redirect(url_for("recipes.overview"))
+    except db.IntegrityError as e:
+      e = str(e)
+      print("Error:", e)
+      flash(f"Recipe not updated!#danger", 'messages')
+
+      return render_template("recipe-detail.html", product=product, items=items, recipes=recipes)
+
+  return render_template("recipe-detail.html", product=product, items=items, recipes=recipes)
+
+@bp.route("/delete-recipe", methods=["POST"])
 @login_required
-def delete_recipe(recipe_id):
+def delete_recipe():
+  # TODO: Fix js del button logic
   db = get_db()
   # ids = request.form.get('recipe_ids', type=list)
   # for id in ids:
@@ -130,14 +185,14 @@ def delete_recipe(recipe_id):
   #     DELETE FROM recipes WHERE id = ? AND user_id = ?
   #   """, (id, g.user['id']))
 
-  db.execute("""--sql
-      DELETE FROM recipes WHERE id = ? AND user_id = ?
-    """, (recipe_id, g.user['id']))
+  # db.execute("""--sql
+  #     DELETE FROM recipes WHERE id = ? AND user_id = ?
+  #   """, (recipe_id, g.user['id']))
 
-  db.commit()
+  # db.commit()
   return redirect(url_for("recipes.overview"))
 
-@bp.route("/create-recipe-inline", methods=["GET", "POST"])
+@bp.route("/recipe-inline", methods=["GET", "POST"])
 @login_required
 def create_recipe_inline():
   """Create recipe as inline form"""
@@ -164,4 +219,4 @@ def create_recipe_inline():
     #   db.execute("INSERT INTO recipes (product_id, item_id, item_name, amount) VALUES (?,?,?,?)", product_id, item_id, item_name, item_amount)
     #   db.execute("UPDATE items SET amount = items.amount - ? WHERE id = ?", round(data['amount'] * item_amount, 1), item_id)
 
-  return render_template("create-recipe-inline.html", items=items)
+  return render_template("recipe-inline.html", items=items)

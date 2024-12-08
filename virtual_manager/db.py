@@ -1,6 +1,8 @@
+import os
+import click
 import sqlite3
 
-import click
+from werkzeug.security import generate_password_hash
 from flask import current_app, g
 
 def get_db():
@@ -19,17 +21,70 @@ def close_db(e=None):
   if db is not None:
     db.close()
       
+def remove_db():
+  """Remove the existing database file."""
+  db_path = current_app.config['DATABASE']
+  if os.path.exists(db_path):
+    os.remove(db_path)
+    click.echo(f'Database removed: {db_path}')
+  else:
+    click.echo('No database file found to remove.')
+
 def init_db():
   db = get_db()
 
   with current_app.open_resource('schema.sql') as f:
     db.executescript(f.read().decode('utf8'))
 
+def insert_fixtures():
+  """Insert development fixtures."""
+  db = get_db()
+  
+  # Insert users
+  users = [
+    ('rafael', generate_password_hash('123'), 1),
+    ('pedro', generate_password_hash('123'), 1)
+  ]
+  db.executemany(
+    "INSERT INTO users (username, hash, is_active) VALUES (?, ?, ?)",
+    users
+  )
+  
+  # Insert items
+  items = [
+    (1, 'Item A', 0, 'kg', 10, 0, 0),  # user_id=1
+    (1, 'Item B', 0, 'pcs', 5, 0, 0),  # user_id=1
+    (2, 'Item C', 0, 'ltr', 2, 0, 0)   # user_id=2
+  ]
+  db.executemany(
+    "INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price, is_product) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    items
+  )
+  
+  # Insert products
+  products = [
+    (1, 'Product A', 0, 'pcs', 2, 0, 1),  # user_id=1
+    (2, 'Product B', 0, 'ltr', 3, 0, 1)   # user_id=2
+  ]
+  db.executemany(
+    "INSERT INTO products (user_id, product_name, amount, measure, quantity_alert, price, has_recipe) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    products
+  )
+  
+  db.commit()
+  click.echo('Development fixtures inserted.')
+
 @click.command('init-db')
-def init_db_command():
+@click.option('--renew', is_flag=True, help='Remove and recreate the database.')
+@click.option('--fixtures', is_flag=True, help='Insert development fixtures.')
+def init_db_command(renew, fixtures):
   """"Create tables if doesn't exists."""
+  if renew:
+    remove_db()
   init_db()
-  click.echo('Database initialized')
+  if fixtures:
+    insert_fixtures()
+  click.echo('Database initialized' + (' after renewal' if renew else '') + (', with fixtures' if fixtures else ''))
 
 def init_app(app):
   app.teardown_appcontext(close_db)

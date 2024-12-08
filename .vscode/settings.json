@@ -21,6 +21,7 @@
     "endmacro",
     "endwith",
     "errorname",
+    "executemany",
     "executescript",
     "htmlcov",
     "jsonify",
@@ -29,6 +30,7 @@
     "pycache",
     "pyfile",
     "pytest",
+    "rafael",
     "sqlite",
     "tabindex",
     "tbody",
@@ -36,7 +38,6 @@
     "thead",
     "tojson",
     "venv",
-    "Verifica",
     "werkzeug"
   ],
   "cSpell.ignoreWords": [

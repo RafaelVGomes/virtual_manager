@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% set endpoint = request.endpoint %}
+{% if endpoint == 'recipes.create_recipe' %}
+  {% set action = 'Create' %}
+{% else %}
+  {% set action = 'Update' %}
+{% endif %}
+
+{% block title %}
+  Recipe - {{ action }}
+{% endblock title %}
+
+{% block main %}
+  <link href="{{ url_for('recipes.static', filename='css/recipe-detail.css') }}" rel="stylesheet">
+  <script type="module" src="{{ url_for('recipes.static', filename='js/recipe-detail.js')}}"></script>
+
+  <h4 class="mb-3">{{ action }} Recipes</h4>
+
+  <form action="{{ request.path }}" method="POST">
+    <div class="mb-3">
+      <h4 class="mx-auto w-auto">{{ product.product_name }}</h4>
+    </div>
+    <div class="mb-3">
+      <div id="recipeContainer">
+        {% include "recipe-inline.html" %}
+      </div>
+    </div>
+    <div>
+      <button class="btn btn-success" type="submit">{{ action }}</button>
+      <a href="{{ url_for('recipes.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+{% endblock main %}

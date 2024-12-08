@@ -22,10 +22,10 @@ function create_recipe_form(recipe_id=null) {
 
   form.prop('id', `inlineRecipe${recipe_id}`)
   
-  form.find('#recipeFormId0').prop({
-    'id': `recipeFormId${recipe_id}`,
+  form.find('#IdRecipe0').prop({
+    'id': `IdRecipe${recipe_id}`,
     'name': `recipe${recipe_id}`,
-    'value': recipe_id,
+    'value': 0,
   })
 
   form.find("#delRecipe0").prop({
@@ -41,7 +41,7 @@ function create_recipe_form(recipe_id=null) {
     $(this).val() ? $(this).prop('selected', false) : $(this).prop('selected', true)
   })
 
-  form.find("#itemAmount0").prop({
+  form.find("#amountRecipe0").prop({
     'name': `recipe${recipe_id}`,
     'id': `itemAmount${recipe_id}`,
     'value': 0

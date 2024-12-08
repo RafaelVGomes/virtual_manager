@@ -1,5 +1,5 @@
 -- database: ../instance/virtual_manager.sqlite
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   hash TEXT NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE users (
 CREATE INDEX idx_users ON users (id, username, is_active);
 
 
-CREATE TABLE items (
+CREATE TABLE IF NOT EXISTS items (
   id INTEGER PRIMARY KEY,
   user_id INTEGER NOT NULL,
   item_name TEXT NOT NULL UNIQUE,
@@ -22,7 +22,7 @@ CREATE TABLE items (
 CREATE INDEX idx_items ON items (id, item_name, is_product);
 
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id INTEGER PRIMARY KEY,
   user_id INTEGER NOT NULL,
   product_name TEXT NOT NULL UNIQUE,
@@ -33,10 +33,10 @@ CREATE TABLE products (
   has_recipe INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
-CREATE INDEX idx_product ON products (id, product_name);
+CREATE INDEX idx_product ON products (id, product_name, user_id, has_recipe);
 
 
-CREATE TABLE recipes (
+CREATE TABLE IF NOT EXISTS recipes (
   id INTEGER PRIMARY KEY,
   user_id INTEGER NOT NULL,
   product_id INTEGER NOT NULL,
