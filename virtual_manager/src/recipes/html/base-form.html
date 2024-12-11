@@ -1,0 +1,78 @@
+{% if form_for == 'js' %}
+  <div class="row align-items-center justify-content-center m-3" id="inlineRecipe{{ index }}">
+    <input type="hidden" name="recipe{{ index }}" id="IdRecipe{{ index }}" value="0">
+    <div class="col-auto align-self-center">
+      <!-- Modal trigger button -->
+      <button type="button" class="btn btn-danger modalBtn" id="modalBtn{{ index }}" 
+        data-bs-toggle="modal" data-bs-target="#jsModal"
+        form-id="#inlineRecipe{{ index }}" select-id="#itemRecipe{{ index }}">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+    <div class="col-sm form-floating align-self-center">
+      {% if items %}
+        <select class="form-select" name="recipe{{ index }}" id="itemRecipe{{ index }}" aria-label="Items to add">
+          <option value="0,-----------" selected>-----------</option>
+          {% for item in items %}
+            <option value="{{ item['id'] }},{{ item['item_name'] }}">{{ item['item_name']|title }}</option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <select class="form-select" aria-label="Items to add" disabled>
+          <option value="null" selected>No items on stock</option>
+        </select>
+      {% endif %}
+      <label>Items List</label>
+    </div>
+    <div class="col-sm form-floating align-self-start">
+      <input autocomplete="off" class="form-control" name="recipe{{ index }}" id="amountRecipe{{ index }}" placeholder="Qnt"
+        type="number" step="1" min="0" value="0">
+      <label>Amount</label>
+    </div>
+  </div>
+{% else %}
+  <!-- DB form {{ index }} -->
+  <div class="row align-items-center justify-content-center m-3" id="inlineRecipe{{ index }}">
+    <input type="hidden" name="recipe{{ index }}" id="IdRecipe{{ index }}" value="{{ recipe['id'] }}">
+    <div class="col-auto align-self-center">
+      <!-- Modal trigger button -->
+      <button type="button" class="btn btn-danger modalBtn" id="modalBtn{{ index }}" 
+        data-bs-toggle="modal" data-bs-target="#dbModal"
+        endpoint-url="{{ url_for('recipes.delete_recipe', id=recipe['id'], _external=True) }}"
+        form-id="#inlineRecipe{{ index }}" select-id="#itemRecipe{{ index }}">
+        <i class="bi bi-trash"></i>
+      </button>
+    </div>
+    <div class="col-sm form-floating align-self-center">
+      {% if items %}
+        <select class="form-select" name="recipe{{ index }}" id="itemRecipe{{ index }}" aria-label="Items to add">
+          <option value="0,-----------"
+            {% if  recipe.get('item_id') == "" %}
+              selected 
+            {% endif %}>-----------
+          </option>
+          {% for item in items %}
+            <option value="{{ item['id'] }},{{ item['item_name'] }}"
+              {% if recipe.get('item_id') == item['id'] %}
+                selected 
+              {% endif %}
+              >{{ item['item_name']|title }}
+            </option>
+          {% endfor %}
+        </select>
+        {{ error('itemRecipe{{ index }}') }}
+      {% else %}
+        <select class="form-select" aria-label="Items to add" disabled>
+          <option selected>No items on stock</option>
+        </select>
+      {% endif %}
+      <label>Items List</label>
+    </div>
+    <div class="col-sm form-floating align-self-start">
+      <input autocomplete="off" class="form-control" name="recipe{{ index }}" id="amountRecipe{{ index }}" placeholder="Qnt"
+        type="number" step="1" min="0" value="{{ recipe['item_amount'] }}">
+      <label>Amount</label>
+      {{ error('amountRecipe{{ index }}') }}
+    </div>
+  </div>
+{% endif %}

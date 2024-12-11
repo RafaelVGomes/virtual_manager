@@ -1,118 +1,75 @@
+{% from "partials/macros.html" import error %}
+
 <link href="{{ url_for('recipes.static', filename='css/recipe-inline.css') }}" rel="stylesheet">
 <script type="module" src="{{ url_for('recipes.static', filename='js/recipe-inline.js')}}"></script>
 
 <div class="container-fluid mb-3" id="inlineFormsContainer">
   <div class="row align-items-center justify-content-center">
+    <!-- BASE form for JS-->
+    {% with index=0, form_for='js' %}
+      {% include "./base-form.html" %}
+    {% endwith %}
     <!-- Forms -->
-    <div class="col-5 border border-primary rounded" id="itemsColumn">
-      {% if recipes|length == 0 %}
-        <!-- BASE form for JS-->
-        <div class="row align-items-center justify-content-center m-3" id="inlineRecipe0">
-          <input type="hidden" name="recipe0" id="IdRecipe0" value="0">
-          <div class="col-auto form-check align-self-center">
-            <input class="form-check-input" type="checkbox" name="recipe0" id="delRecipe0">
-            <label class="form-check-label" for="delRecipe0"><i class="bi bi-trash"></i></label>
-          </div>
-          <div class="col-sm form-floating align-self-center">
-            {% if items %}
-              <select class="form-select" name="recipe0" id="itemRecipe0" aria-label="Items to add">
-                <option selected>-----------</option>
-                {% for item in items %}
-                  <option value="{{ item['id'] }},{{ item['item_name'] }}">{{ item['item_name']|title }}</option>
-                {% endfor %}
-              </select>
-            {% else %}
-              <select class="form-select" aria-label="Items to add" disabled>
-                <option selected>No items on stock</option>
-              </select>
-            {% endif %}
-            <label>Items List</label>
-          </div>
-          <div class="col-sm form-floating align-self-start">
-            <input autocomplete="off" class="form-control" name="recipe0" id="amountRecipe0" placeholder="Qnt"
-              type="number" step="1" min="0" value="0">
-            <label>Amount</label>
-          </div>
-        </div>
-      {% else %}
+    <div class="col-5 border border-primary rounded" id="inline-forms">
+      {% if recipes|length > 0 %}
         {% for recipe in recipes %}
-          <div class="row align-items-center justify-content-center m-3" id="inlineRecipe{{ loop.index0 }}">
-            <input type="hidden" name="recipe{{ loop.index0 }}" id="IdRecipe{{ loop.index0 }}" value="{{ recipe['id'] }}">
-            <div class="col-auto form-check align-self-center">
-              <input class="form-check-input" type="checkbox" name="recipe{{ loop.index0 }}" id="delRecipe{{ loop.index0 }}">
-              <label class="form-check-label" for="delRecipe{{ loop.index0 }}"><i class="bi bi-trash"></i></label>
-            </div>
-            <div class="col-sm form-floating align-self-center">
-              {% if items %}
-                <select class="form-select" name="recipe{{ loop.index0 }}" id="itemRecipe{{ loop.index0 }}" aria-label="Items to add">
-                  <option value=""
-                    {% if  recipe.get('item_id') == "" %}
-                      selected 
-                    {% endif %}>-----------
-                  </option>
-                  {% for item in items %}
-                    <option value="{{ item['id'] }},{{ item['item_name'] }}"
-                      {% if recipe.get('item_id') == item['id'] %}
-                        selected 
-                      {% endif %}
-                      >{{ item['item_name']|title }}
-                    </option>
-                  {% endfor %}
-                </select>
-              {% else %}
-                <select class="form-select" aria-label="Items to add" disabled>
-                  <option selected>No items on stock</option>
-                </select>
-              {% endif %}
-              <label>Items List</label>
-            </div>
-            <div class="col-sm form-floating align-self-start">
-              <input autocomplete="off" class="form-control" name="recipe{{ loop.index0 }}" id="amountRecipe{{ loop.index0 }}" placeholder="Qnt"
-                type="number" step="1" min="0" value="{{ recipe['item_amount'] }}">
-              <label>Amount</label>
-            </div>
-          </div>
+          {% with index=loop.index %}
+            {% include "./base-form.html" %}
+          {% endwith %}
         {% endfor %}
       {% endif %}
     </div>
-    <input type="hidden" name="recipesIndex" id="recipesIndex" value="{{ recipes|length }}">
-    {# <input type="hidden" name="inlineFormsTotal" id="inlineFormsTotal" value="0"> #}
-    {# <input type="hidden" name="createdInlineForms" id="createdInlineForms" value="0"> #}
-    {# <input type="hidden" name="deletedInlineForms" id="deletedInlineForms" value="0"> #}
+    <input type="hidden" name="recipesIndex" id="recipesIndex" value="{{ recipes|length + 1 if recipes else 1 }}">
     <div class="col-1">
-      <button class="btn btn-success" id="addItemBtn" type="button"><i class="bi bi-plus-lg"></i></button>
-      <button class="btn btn-danger mt-1" id="delItemBtn" type="button" disabled><i class="bi bi-trash"></i></button>
+      <button class="btn btn-success" id="addJsFormBtn" type="button"><i class="bi bi-plus-lg"></i></button>
     </div>
   </div>
 </div>
-{% if nothing %}
-<!-- Modal trigger button -->
-<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-{{ recipe.product_name|kebab_case }}" {% if recipe.items_list|length == 0 %} disabled {% endif %}>
-  <i class="bi bi-trash"></i>
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="delete-{{ recipe.product_name|kebab_case }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<!-- Delete JS modal (dynamically altered for js forms removal) -->
+<div class="modal fade" id="jsModal" tabindex="-1" aria-labelledby="jsFormModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
+        <h1 class="modal-title fs-5" id="jsFormModalLabel">
+          <i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!
+        </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body fs-6">
-        <p class="text-start">Do you want to delete "{{ recipe.product_name|title }}'s" whole recipe?</p>
-        {% for item in recipe.items_list %}
-          <li class="text-start">{{ item['name']|title }} x{{ item['recipe_amount'] }}</li>
-        {% endfor %}
+        <!-- JS text insertion -->
+        <p class="text-start" id="js-modal-body-text"></p>
       </div>
       <div class="modal-footer">
-        <form action="{{ url_for('recipes.delete_recipe', recipe_id=recipe.id) }}" method="POST">
-          <input type="hidden" name="recipe_ids" id="recipe_ids-{{ loop.index }}" value="{{ recipe.id }}">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-          <button type="submit" class="btn btn-danger">Yes</button>
-        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger mt-1" id="delJsFormBtn"
+          form-id="#formToDelete" data-bs-dismiss="modal">
+          Yes
+        </button>
       </div>
     </div>
   </div>
 </div>
-{% endif %}
+<!-- Delete DB modal (dynamically altered for data base forms deletion) -->
+<div class="modal fade" id="dbModal" tabindex="-1" aria-labelledby="dbFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="dbFormModalLabel">
+          <i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body fs-6">
+        <!-- JS text insertion -->
+        <p class="text-start" id="db-modal-body-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger mt-1" id="delDbFormBtn" data-bs-dismiss="modal"
+          form-id="" data-url="">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

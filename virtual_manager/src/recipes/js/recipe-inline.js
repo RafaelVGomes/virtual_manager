@@ -1,94 +1,122 @@
+import { toast } from "../../../static/components/toast.js"
+
 $(document).ready(function () {
-  recipes_json_handler()
-  $("#itemsColumn").children().length == 0 ? create_recipe_form() : null
-  $('#addItemBtn').on('click', () => { create_recipe_form() })
-  $("#delItemBtn").on('click', () => { delete_recipe_form() })
+  $('#addJsFormBtn').on('click', () => { create_js_form() })
+  $('#delJsFormBtn').on('click', (e) => { delete_js_form(e.currentTarget) })
+  $('#delDbFormBtn').on('click', (e) => { delete_db_form(e.currentTarget) })
+  $('#jsModal').on('show.bs.modal', (e) => { update_js_modal(e.relatedTarget) })
+  $('#dbModal').on('show.bs.modal', (e) => { update_db_modal(e.relatedTarget) })
+  check_forms()
 })
 
-
-function disable_del_btn() {
-  if ($("#itemsColumn").children().length > 1) {
-    $('#delItemBtn').prop('disabled', false)
-  } else {
-    $('#delItemBtn').prop('disabled', true)
-  }
-}
-
-function create_recipe_form(recipe_id=null) {
-  let index = Number($("#recipesIndex").val())
-  !recipe_id ? recipe_id = index + 1 : index = recipe_id
-  // let totalForms = Number($("#inlineFormsTotal").val())
-  const form = $("#inlineRecipe0").clone(true)
-
-  form.prop('id', `inlineRecipe${recipe_id}`)
+function create_js_form() {
+  let index = Number($('#recipesIndex').val())
+  const form = $('#inlineRecipe0').clone(true)
   
-  form.find('#IdRecipe0').prop({
-    'id': `IdRecipe${recipe_id}`,
-    'name': `recipe${recipe_id}`,
+  form.attr('id', `inlineRecipe${index}`)
+  
+  form.find('#IdRecipe0').attr({
+    'id': `IdRecipe${index}`,
+    'name': `recipe${index}`,
     'value': 0,
   })
 
-  form.find("#delRecipe0").prop({
-    'name': `recipe${recipe_id}`,
-    'id': `delRecipe${recipe_id}`,
-    'value': `#inlineRecipe${recipe_id}`,
-    'checked': false
+  form.find('#modalBtn0').attr({
+    'id': `modalBtn${index}`,
+    'form-id': `#inlineRecipe${index}`,
+    'select-id': `#itemRecipe${index}`
   })
 
-  form.find("label[for='delRecipe0']").prop('for', `delRecipe${recipe_id}`)
-
-  form.find(`select`).prop({'name': `recipe${recipe_id}`, 'id': `itemRecipe${recipe_id}`}).children().each(function() {
-    $(this).val() ? $(this).prop('selected', false) : $(this).prop('selected', true)
+  form.find('#itemRecipe0').attr({
+    'id': `itemRecipe${index}`,
+    'name': `recipe${index}`
   })
 
-  form.find("#amountRecipe0").prop({
-    'name': `recipe${recipe_id}`,
-    'id': `itemAmount${recipe_id}`,
-    'value': 0
+  form.find('#amountRecipe0').attr({
+    'id': `amountRecipe${index}`,
+    'name': `recipe${index}`
   })
-
-  $("#itemsColumn").append(form)
+  
+  $('#inline-forms').append(`<!-- JS form ${index} -->`).append(form)
   index++
-  $("#recipesIndex").val(index)
-  // totalForms++
-  // $("#inlineFormsTotal").val(totalForms)
-
-  disable_del_btn()
+  $('#recipesIndex').val(index)
+  check_forms()
 }
 
-
-export function delete_recipe_form() {
-  // let totalForms = Number($("#inlineFormsTotal").val())
-  $("#itemsColumn").find("input[type=checkbox]:checked").each(function () {
-    $($(this).val()).remove()
-    // $("#inlineFormsTotal").val(totalForms - 1)
-  })
-
-  disable_del_btn()
-}
-
-function recipes_json_handler(debug=false) {
-  if ($('#recipesData').html()) {
-    const recipesData = JSON.parse($('#recipesData').html())
-    
-    Object.entries(recipesData).forEach(([key, value]) => {
-      if (key == 'recipes') {
-        Object.keys(recipesData[key]).forEach(recipe => {
-          // creates forms
-          Object.entries(recipesData[key][recipe]).forEach(([element_id, value]) => {
-            element_id.includes('recipeId') ? create_recipe_form(value) : null,
-            debug ? log(`${element_id}: ${value}`): null
-          })
-          // populates forms
-          Object.entries(recipesData[key][recipe]).forEach(([element_id, value]) => {
-            $(`#${element_id}`).val(value)
-          })
-        })
-      } else {
-        // populates anything else
-        $(`#${key}`).val(value)
-      }
-    })
+function update_js_modal(click_btn) {
+  const btn = $(click_btn)
+  const formId = btn.attr('form-id')
+  const form = $(formId)
+  const selectId = btn.attr('select-id')
+  const selectedItem = form.find(`${selectId} :selected`).text()
+  const modal = $('#jsModal')
+  const delFormBtn = modal.find('#delJsFormBtn')
+  const modalBodyText = modal.find('#js-modal-body-text')
+  
+  delFormBtn.attr({'form-id': formId})
+  
+  if (selectedItem === '-----------') {
+    $(modalBodyText).text('Are you sure you want to delete this form?')
+  } else {
+    $(modalBodyText).text(`Are you sure you want to delete "${selectedItem}"?`)
   }
 }
 
+function delete_js_form(click_btn) {
+  const form = $($(click_btn).attr('form-id'))
+  $(form).remove()
+  check_forms()
+}
+
+function update_db_modal(click_btn) {
+  const btn = $(click_btn)
+  const url = btn.attr('endpoint-url')
+  const formId = btn.attr('form-id')
+  const form = $(formId)
+  const selectId = btn.attr('select-id')
+  const selectedItem = form.find(`${selectId} :selected`).text()
+  const modal = $('#dbModal')
+  const delModalBtn = modal.find('#delDbFormBtn')
+  const modalBodyText = modal.find('#db-modal-body-text')
+  
+  delModalBtn.attr({'data-url': url})
+  delModalBtn.attr({'form-id': formId})
+  
+  if (selectedItem === '-----------') {
+    $(modalBodyText).text('Are you sure you want to delete this form?')
+  } else {
+    $(modalBodyText).text(`Are you sure you want to delete "${selectedItem}"?`)
+  }
+}
+
+function delete_db_form(click_btn) {
+  const btn = $(click_btn)
+  const url = $(btn).attr('data-url')
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  }).then((response) => {
+    if (response.ok) {
+      toast('Recipe item deleted.', 'success')
+      delete_js_form(btn)
+    } else {
+      toast('Item not delete.')
+    }
+  }).catch((error) => {
+    toast('Error while connecting to the server.')
+    console.log(error)
+  })
+}
+
+function check_forms() {
+  const forms = $('#inline-forms')
+  const text = $('<div class="row align-items-center justify-content-center my-3" id="inline-forms-text">Add an item form.</div>')
+  if (forms.children().length === 0 && !forms.find('#inline-forms-text').length) {
+    forms.append(text)
+  } else {
+    forms.find('#inline-forms-text').remove()
+  }
+}
