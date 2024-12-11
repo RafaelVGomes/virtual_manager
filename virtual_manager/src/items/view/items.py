@@ -48,7 +48,7 @@ def create_item():
 
   if request.method == "POST":
     form = {
-      'item_name': request.form.get("item_name"),
+      'item_name': request.form.get("item_name").lower(),
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),
@@ -89,7 +89,7 @@ def update_item(id):
   if request.method == "POST":
     form = {
       'id': id,
-      'item_name': request.form.get("item_name"),
+      'item_name': request.form.get("item_name").lower(),
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),

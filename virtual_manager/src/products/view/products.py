@@ -67,7 +67,7 @@ def create_product():
   
   if request.method == "POST":
     form = {
-      'product_name': request.form.get("product_name"),
+      'product_name': request.form.get("product_name").lower(),
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),
@@ -126,7 +126,7 @@ def update_product(id):
   if request.method == "POST":
     form = {
       'id': product['id'],
-      'product_name': request.form.get("product_name"),
+      'product_name': request.form.get("product_name").lower(),
       'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
       'quantity_alert': request.form.get("quantity_alert", type=int),

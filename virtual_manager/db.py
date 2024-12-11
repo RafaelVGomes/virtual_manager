@@ -52,9 +52,9 @@ def insert_fixtures():
   
   # Insert items
   items = [
-    (1, 'Item A', 0, 'kg', 10, 0, 0),  # user_id=1
-    (1, 'Item B', 0, 'pcs', 5, 0, 0),  # user_id=1
-    (2, 'Item C', 0, 'L', 2, 0, 0)   # user_id=2
+    (1, 'item a', 0, 'kg', 10, 0, 0),  # user_id=1
+    (1, 'item b', 0, 'pcs', 5, 0, 0),  # user_id=1
+    (2, 'item c', 0, 'L', 2, 0, 0)   # user_id=2
   ]
   db.executemany(
     "INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price, is_product) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -63,8 +63,8 @@ def insert_fixtures():
   
   # Insert products
   products = [
-    (1, 'Product A', 0, 'pcs', 2, 0, 1),  # user_id=1
-    (2, 'Product B', 0, 'L', 3, 0, 1)   # user_id=2
+    (1, 'product a', 0, 'pcs', 2, 0, 1),  # user_id=1
+    (2, 'product b', 0, 'L', 3, 0, 1)   # user_id=2
   ]
   db.executemany(
     "INSERT INTO products (user_id, product_name, amount, measure, quantity_alert, price, has_recipe) VALUES (?, ?, ?, ?, ?, ?, ?)",
