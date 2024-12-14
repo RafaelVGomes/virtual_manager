@@ -1,6 +1,6 @@
 {% macro error(tag_id, font_size='small', color='red') %}
   {% if tag_id %}
-    <div id="{{ input_id }}_error">
+    <div id="{{ tag_id }}_error">
       {% with errors=get_flashed_messages(with_categories=true) %}
         {% if errors %}
           {% for id, error in errors %}
