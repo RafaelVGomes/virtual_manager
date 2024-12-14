@@ -1,5 +1,4 @@
 .venv/
-flask_session/
 
 *.pyc
 __pycache__/
@@ -16,4 +15,4 @@ build/
 
 tests/
 
-project.zip
+zip_project.sh
