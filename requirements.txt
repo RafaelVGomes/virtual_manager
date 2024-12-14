@@ -16,5 +16,4 @@ pyproject_hooks==1.0.0
 pytest==7.4.4
 requests==2.31.0
 urllib3==2.2.0
--e git+ssh://git@github.com/RafaelVGomes/Portfolio.git@8d7b720c51b670b74d706bbac91ba42d1b87a65a#egg=virtual_manager&subdirectory=Flask (SSR)/project
 Werkzeug==3.0.1
