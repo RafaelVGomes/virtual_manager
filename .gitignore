@@ -13,6 +13,4 @@ dist/
 build/
 *.egg-info/
 
-tests/
-
 zip_project.sh

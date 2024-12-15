@@ -19,7 +19,7 @@
 
   <form action="{{ request.path }}" method="POST">
     <div class="mb-3">
-      <h4 class="mx-auto w-auto">{{ product.product_name }}</h4>
+      <h4 class="mx-auto w-auto">{{ product.product_name|title() }}</h4>
     </div>
     <div class="mb-3">
       <div id="recipeContainer">
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div>
-      <button class="btn btn-success" type="submit">{{ action }}</button>
+      <button type="submit" class="btn btn-success" id="recipe-save-btn">{{ action }}</button>
       <a href="{{ url_for('recipes.overview') }}" role="button" class="btn btn-danger">Cancel</a>
     </div>
   </form>

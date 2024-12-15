@@ -1,25 +1,24 @@
-{% from "partials/macros.html" import error %}
-
 <link href="{{ url_for('recipes.static', filename='css/recipe-inline.css') }}" rel="stylesheet">
 <script type="module" src="{{ url_for('recipes.static', filename='js/recipe-inline.js')}}"></script>
 
 <div class="container-fluid mb-3" id="inlineFormsContainer">
   <div class="row align-items-center justify-content-center">
     <!-- BASE form for JS-->
-    {% with index=0, form_for='js' %}
-      {% include "./base-form.html" %}
-    {% endwith %}
+    {% include "./partials/recipe-base-form.html" %}
     <!-- Forms -->
     <div class="col-5 border border-primary rounded" id="inline-forms">
       {% if recipes|length > 0 %}
         {% for recipe in recipes %}
-          {% with index=loop.index %}
-            {% include "./base-form.html" %}
-          {% endwith %}
+          {% if recipe['index'] and recipe['index'] > 0 %}
+            {% set index = recipe['index'] %}
+          {% else %}
+            {% set index=loop.index %}
+          {% endif %}
+            {% include "./partials/recipe-loop-form.html" %}
         {% endfor %}
       {% endif %}
     </div>
-    <input type="hidden" name="recipesIndex" id="recipesIndex" value="{{ recipes|length + 1 if recipes else 1 }}">
+    <input type="hidden" name="recipesIndex" id="recipesIndex" value="{{ index }}">
     <div class="col-1">
       <button class="btn btn-success" id="addJsFormBtn" type="button"><i class="bi bi-plus-lg"></i></button>
     </div>

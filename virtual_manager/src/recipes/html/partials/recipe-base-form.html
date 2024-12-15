@@ -1,0 +1,31 @@
+<div class="row align-items-center justify-content-center m-3" id="inlineRecipe0">
+  <input type="hidden" name="recipeId0" id="recipeId0" value="0">
+  <div class="col-auto align-self-center">
+    <!-- Modal trigger button -->
+    <button type="button" class="btn btn-danger modalBtn" id="modalBtn0" 
+      data-bs-toggle="modal" data-bs-target="#jsModal"
+      form-id="#inlineRecipe0" select-id="#itemRecipe0">
+      <i class="bi bi-trash"></i>
+    </button>
+  </div>
+  <div class="col-sm form-floating align-self-center">
+    {% if items %}
+      <select class="form-select" name="itemRecipe0" id="itemRecipe0" aria-label="Items to add">
+        <option value="0,-----------" selected>-----------</option>
+        {% for item in items %}
+          <option value="{{ item['id'] }},{{ item['item_name'] }}">{{ item['item_name']|title }}</option>
+        {% endfor %}
+      </select>
+    {% else %}
+      <select class="form-select" aria-label="Items to add" disabled>
+        <option value="null" selected>No items on stock</option>
+      </select>
+    {% endif %}
+    <label>Items List</label>
+  </div>
+  <div class="col-sm form-floating align-self-start">
+    <input autocomplete="off" class="form-control" name="amountRecipe0" id="amountRecipe0" placeholder="Qnt"
+      type="number" step="1" min="0" value="0">
+    <label>Amount</label>
+  </div>
+</div>
