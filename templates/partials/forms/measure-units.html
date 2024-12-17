@@ -1,6 +1,8 @@
-<select class="form-select mx-auto w-auto" name="measure" id="measure" aria-label="Units of measurement">
+<select class="form-select" name="measure" id="measure" aria-label="Units of measurement">
   <option value="" {% if form.get('measure', '') == "" %} selected {% endif %}>Units of measurement</option>
   <option value="kg" {% if form.get('measure', '') == "kg" %} selected {% endif %}>kg</option>
   <option value="L" {% if form.get('measure', '') == "L" %} selected {% endif %}>L</option>
   <option value="pcs" {% if form.get('measure', '') == "pcs" %} selected {% endif %}>pcs</option>
 </select>
+<label class="form-label "for="measure">Measures</label>
+{{ error('measure') }}

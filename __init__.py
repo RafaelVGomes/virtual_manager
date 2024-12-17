@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 
-from virtual_manager.helpers import camelCase, usd, kebab_case
+from helpers import camelCase, usd, kebab_case
 
 # Configure application
 def create_app(test_config=None):
@@ -35,7 +35,7 @@ def create_app(test_config=None):
 
     # Package structure -> https://youtu.be/44PvX0Yv368
     # Blueprints registration
-    from virtual_manager import src
+    import src
     app.register_blueprint(src.index.bp)
     app.add_url_rule('/', endpoint='index')
     app.register_blueprint(src.auth.bp)
