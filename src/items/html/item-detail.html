@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% set endpoint = request.endpoint %}
+
+{% if endpoint == 'items.create_item' %}
+  {% set action = 'Create' %}
+{% else %}
+  {% set action = 'Update' %}
+{% endif %}
+
+{% block title %}
+  Item - {{ action }}
+{% endblock title %}
+
+{% block main %}
+  <script src="{{ url_for('items.static', filename='js/item-detail.js')}}"></script>
+
+  <h4 class="mb-3">{{ action }} Items</h4>
+
+  <form action="{{ request.path }}" method="POST">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        {% for field in form %}
+          {% if field.name not in ['id','user_id'] %}
+            {% if field.name == "measure" %}
+              <div class="form-floating mb-3">
+                <select class="form-select" name="measure" id="measure" aria-label="Units of measurement">
+                  <option value="" {% if field.value == "" %} selected {% endif %}>Units of measurement</option>
+                  <option value="kg" {% if field.value == "kg" %} selected {% endif %}>kg</option>
+                  <option value="L" {% if field.value == "L" %} selected {% endif %}>L</option>
+                  <option value="pcs" {% if field.value == "pcs" %} selected {% endif %}>pcs</option>
+                </select>
+                <label class="form-label "for="measure">Measures</label>
+                {{ error('measure') }}
+              </div>
+            {% else %}
+              <div class="form-floating mb-3">
+                <input autocomplete="off" {% if loop.index == 1 %}autofocus{% endif %}
+                  class="form-control" id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type }}"
+                  placeholder="Fill this field" value="{{ field.value }}"
+                  {% if field.attrs %}
+                    {% for key, value in field.attrs.items() %}
+                      {{ key }}={{ value }}
+                    {% endfor %}
+                  {% endif %}>
+                <label class="form-label" for="{{ field.name }}">{{ ' '.join(field.name.split('_'))|capitalize }}</label>
+                {{ error(field.name) }}
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="form-floating mb-3">
+      <button class="btn btn-success" type="submit">{{ action }}</button>
+      <a href="{{ url_for('items.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+{% endblock main %}
