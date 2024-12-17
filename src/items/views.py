@@ -26,7 +26,7 @@ def create_item():
     form = get_form(request)
     
     if validate_form(form):
-      form = get_data_to_save(form)
+      form_to_save = get_data_to_save(form)
       
       try:
         db = get_db()
@@ -34,7 +34,7 @@ def create_item():
           """--sql
           INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price)
           VALUES (:user_id, :item_name, :amount, :measure, :quantity_alert, :price);
-          """, form
+          """, form_to_save
         )
         db.commit()
         flash("Item created successfully!#success", 'messages')
@@ -56,7 +56,7 @@ def update_item(id):
     form = get_form(request)
     
     if validate_form(form):
-      form = get_data_to_save(form)
+      form_to_save = get_data_to_save(form)
 
       try:
         db.execute(
@@ -68,13 +68,23 @@ def update_item(id):
             quantity_alert = :quantity_alert,
             price = :price
           WHERE id = :id AND user_id = :user_id;
-          """, form
+          """, form_to_save
         )
         db.commit()
         flash("Item updated successfully!#success", 'messages')
         return redirect(url_for("items.overview"))
-      except db.IntegrityError:
-        flash("Item not updated. Name must be unique.#danger", 'messages')
+      except db.IntegrityError as e:
+        e = str(e)
+
+        print("Error:", e)
+
+        if 'UNIQUE' in e and 'items.item_name' in e:
+          flash("Item name already in use.", "item_name")
+          flash(f"Choose a different name.#info", 'messages')
+        else:
+          flash(f"Item not updated!#danger", 'messages')
+          return render_template("item-detail.html", form=form)
+        
     return render_template("item-detail.html", form=form)
 
   return render_template("item-detail.html", form=form)

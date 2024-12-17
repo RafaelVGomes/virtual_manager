@@ -163,7 +163,7 @@ def update_product(id):
             flash("Product name already in use.", "product_name")
             flash(f"Choose a different name.#info", 'messages')
           else:
-            flash(f"Product not created!#danger", 'messages')
+            flash(f"Product not updated!#danger", 'messages')
           
           return render_template("product-detail.html", form=form)
     else:

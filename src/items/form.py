@@ -66,8 +66,6 @@ def get_form_data(id: Optional[int]=None) -> list[FormField]:
         if field['name'] == key:
           field['value'] = value
     
-    # new_form.append({'id': id})
-  # print(f"{new_form=}")
   return new_form
 
 def get_form(request: Request) -> list[FormField]:
