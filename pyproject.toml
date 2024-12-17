@@ -1,5 +1,5 @@
 [project]
-name = "virtual_manager"
+name = "project"
 version = "1.0.0"
 description = "A basic inventory and finances app manager."
 dependencies = [
@@ -12,8 +12,17 @@ build-backend = "flit_core.buildapi"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-testpaths = ["virtual_manager"]
+testpaths = ["."]
 
 [tool.coverage.run]
 branch = true
-source = ["virtual_manager"]
+source = ["src"]
+
+[tool.yapf]
+based_on_style = "pep8"
+indent_width = 2
+
+[tool.isort]
+indent = "  "
+line_length = 88
+

@@ -1,8 +1,7 @@
-from flask import Blueprint, flash, render_template, g
+from flask import Blueprint, flash, g, render_template
 
-from virtual_manager.db import get_db
-from virtual_manager.src.auth.view.auth import login_required
-
+from ...auth.view.auth import login_required
+from ...db import get_db
 
 bp = Blueprint('index', __name__, template_folder='../html')
 

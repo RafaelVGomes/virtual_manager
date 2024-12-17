@@ -1,8 +1,11 @@
 import functools
-from flask import Blueprint, flash, redirect, render_template, request, session, g, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
 
-from virtual_manager.db import get_db
+from flask import (Blueprint, flash, g, redirect, render_template, request, session,
+                   url_for)
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from .. import get_db
+
 
 def login_required(view):
   @functools.wraps(view)

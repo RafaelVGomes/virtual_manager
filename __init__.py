@@ -1,14 +1,16 @@
 import os
+
 from flask import Flask
 
-from helpers import camelCase, usd, kebab_case
+from .helpers import camelCase, kebab_case, usd
+
 
 # Configure application
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     app.config.from_mapping(
       SECRET_KEY='dev',
-      DATABASE=os.path.join(app.instance_path, 'virtual_manager.sqlite'),
+      DATABASE=os.path.join(app.instance_path, 'project.sqlite'),
     )
 
     # Custom filters
@@ -30,16 +32,16 @@ def create_app(test_config=None):
       pass
 
     # initialize DB
-    from . import db
+    from .src import db
     db.init_app(app)
 
     # Package structure -> https://youtu.be/44PvX0Yv368
     # Blueprints registration
-    import src
+    from . import src
     app.register_blueprint(src.index.bp)
     app.add_url_rule('/', endpoint='index')
     app.register_blueprint(src.auth.bp)
-    app.register_blueprint(src.items.bp)
+    app.register_blueprint(src.views.bp)
     app.register_blueprint(src.products.bp)
     app.register_blueprint(src.recipes.bp)
 

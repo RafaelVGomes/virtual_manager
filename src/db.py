@@ -1,9 +1,10 @@
 import os
-import click
 import sqlite3
 
-from werkzeug.security import generate_password_hash
+import click
 from flask import current_app, g
+from werkzeug.security import generate_password_hash
+
 
 def get_db():
   if 'db' not in g:
@@ -52,12 +53,12 @@ def insert_fixtures():
   
   # Insert items
   items = [
-    (1, 'item a', 0, 'kg', 10, 0, 0),  # user_id=1
-    (1, 'item b', 0, 'pcs', 5, 0, 0),  # user_id=1
-    (2, 'item c', 0, 'L', 2, 0, 0)   # user_id=2
+    (1, 'item a', 0, 'kg', 10, 0),  # user_id=1
+    (1, 'item b', 0, 'pcs', 5, 0),  # user_id=1
+    (2, 'item c', 0, 'L', 2, 0)   # user_id=2
   ]
   db.executemany(
-    "INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price, is_product) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price) VALUES (?, ?, ?, ?, ?, ?)",
     items
   )
   

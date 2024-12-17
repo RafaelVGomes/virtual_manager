@@ -1,4 +1,4 @@
--- database: ../instance/virtual_manager.sqlite
+-- database: ./instance/project.sqlite
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS items (
   price NUMERIC  DEFAULT 0,
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
-CREATE INDEX idx_items ON items (id, item_name, is_product);
+CREATE INDEX idx_items ON items (id, item_name);
 
 
 CREATE TABLE IF NOT EXISTS products (

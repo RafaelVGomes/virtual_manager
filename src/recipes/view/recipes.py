@@ -1,9 +1,10 @@
 import json
 
-from flask import Blueprint, Request, flash, redirect, render_template, request, g, url_for
+from flask import (Blueprint, Request, flash, g, redirect, render_template, request,
+                   url_for)
 
-from virtual_manager.db import get_db
-from virtual_manager.src.auth.view.auth import login_required
+from ...auth.view.auth import login_required
+from ...db import get_db
 
 
 def form_handle(product_id: int, request: Request) -> tuple[int, list[dict]]:

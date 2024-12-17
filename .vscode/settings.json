@@ -48,5 +48,8 @@
   "files.exclude": {
     "**/__pycache__": true,
     ".venv": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
   }
 }
