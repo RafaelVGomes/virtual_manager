@@ -1,10 +1,9 @@
 from copy import deepcopy
-from sqlite3 import Row
 from typing import Literal, Optional, TypedDict, Union
 
 from flask import Request, abort, flash, g
 
-from ..db import get_db
+from virtual_manager.db import get_db
 
 class Attrs(TypedDict, total=False):
   min: str

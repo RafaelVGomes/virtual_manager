@@ -1,4 +1,4 @@
--- database: ./instance/project.sqlite
+-- database: ../instance/project.sqlite
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,

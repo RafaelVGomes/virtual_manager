@@ -2,7 +2,7 @@ import re
 
 from flask import Request
 
-from .src.db import get_db
+from .db import get_db
 
 
 def usd(value):

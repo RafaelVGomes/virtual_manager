@@ -1,6 +1,8 @@
 import pytest
 from flask import Flask, g, request
-from virtual_manager.src.recipes.view.recipes import form_handle
+
+from src.recipes.view.recipes import form_handle
+
 
 # Fixture to create a Flask application instance
 @pytest.fixture()

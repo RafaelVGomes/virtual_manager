@@ -2,7 +2,7 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template, reques
                    url_for)
 
 from ...auth.view.auth import login_required
-from ...db import get_db
+from ....db import get_db
 
 
 def validate_form(form):

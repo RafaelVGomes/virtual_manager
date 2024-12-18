@@ -2,12 +2,11 @@ import os
 
 from flask import Flask
 
-from .helpers import camelCase, kebab_case, usd
+from virtual_manager.helpers import camelCase, kebab_case, usd
 
-
-# Configure application
+# Application setup
 def create_app(test_config=None):
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
       SECRET_KEY='dev',
       DATABASE=os.path.join(app.instance_path, 'project.sqlite'),
@@ -32,7 +31,7 @@ def create_app(test_config=None):
       pass
 
     # initialize DB
-    from .src import db
+    from . import db
     db.init_app(app)
 
     # Package structure -> https://youtu.be/44PvX0Yv368

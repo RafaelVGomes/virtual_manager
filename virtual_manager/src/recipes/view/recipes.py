@@ -4,7 +4,7 @@ from flask import (Blueprint, Request, flash, g, redirect, render_template, requ
                    url_for)
 
 from ...auth.view.auth import login_required
-from ...db import get_db
+from ....db import get_db
 
 
 def form_handle(product_id: int, request: Request) -> tuple[int, list[dict]]:

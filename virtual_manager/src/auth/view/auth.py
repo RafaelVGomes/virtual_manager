@@ -4,7 +4,7 @@ from flask import (Blueprint, flash, g, redirect, render_template, request, sess
                    url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .. import get_db
+from virtual_manager.db import get_db
 
 
 def login_required(view):
