@@ -33,14 +33,14 @@
   <body>
     <nav class="bg-dark navbar navbar-expand-md navbar-dark sticky-top mb-3">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Virtual Manager</a>
+        <a class="navbar-brand" href="{{ url_for('index.overview') }}">Virtual Manager</a>
         <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#layoutNavbar" data-bs-toggle="collapse" type="button">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="layoutNavbar">
           {%- if g.user %}
             <ul class="navbar-nav me-auto mt-2" id="index-tabs">
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Overview</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('index.overview') }}">Overview</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('items.overview') }}">Items</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('products.overview') }}">Products</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('recipes.overview') }}">Recipes</a></li>

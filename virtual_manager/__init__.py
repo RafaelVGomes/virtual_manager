@@ -38,7 +38,6 @@ def create_app(test_config=None):
     # Blueprints registration
     from . import src
     app.register_blueprint(src.index.bp)
-    app.add_url_rule('/', endpoint='index')
     app.register_blueprint(src.auth.bp)
     app.register_blueprint(src.views.bp)
     app.register_blueprint(src.products.bp)
