@@ -44,7 +44,8 @@ def insert_fixtures():
   # Insert users
   users = [
     ('rafael', generate_password_hash('123'), 1),
-    ('pedro', generate_password_hash('123'), 1)
+    ('pedro', generate_password_hash('123'), 1),
+    ('off', generate_password_hash('123'), 0)
   ]
   db.executemany(
     "INSERT INTO users (username, hash, is_active) VALUES (?, ?, ?)",
