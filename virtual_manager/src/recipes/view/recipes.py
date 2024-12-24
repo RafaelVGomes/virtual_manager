@@ -43,7 +43,7 @@ def form_handle(product_id: int, request: Request) -> tuple[int, list[dict]]:
     except Exception as e:
       print(f"Error processing recipe index: {i} -> {e}")
 
-  return start_index, recipes
+  return start_index + 1, recipes
   
 def validate_forms(recipes: list[dict]) -> bool:
   errors = {}
@@ -174,16 +174,16 @@ def update_recipe(product_id: int):
     WHERE user_id = ? ORDER BY item_name ASC;
   """, (g.user['id'],)).fetchall()
 
-  context['db_recipes'] = db.execute("""--sql
+  db_recipes = db.execute("""--sql
     SELECT id, item_id, item_amount FROM recipes
     WHERE user_id = ? AND product_id = ?;
   """, (g.user['id'], product_id)).fetchall()
 
-  context['index'] = len(context['db_recipes'])
+  context['index'] = len(db_recipes) + 1
   
   context['recipes'] = []
 
-  for recipe in context['db_recipes']:
+  for recipe in db_recipes:
     recipe = dict(recipe)
     
     for item in context['items']:
