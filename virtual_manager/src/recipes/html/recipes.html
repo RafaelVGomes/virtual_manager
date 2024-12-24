@@ -27,7 +27,7 @@
                     <div class="accordion-body">
                       {% if recipe.items_list[0] != None %}
                         {% for item in recipe.items_list %}
-                          <li class="text-start">{{ item['name']|title }} x{{ item['recipe_amount'] }}</li>
+                          <li class="text-start">{{ item['recipe_amount'] }}x {{ item['name']|title }}</li>
                         {% endfor %}
                       {% else %}
                         <li class="text-start">No recipe</li>
