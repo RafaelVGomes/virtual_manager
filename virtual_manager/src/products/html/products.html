@@ -59,21 +59,26 @@ Products
             aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel"><i
-                      class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title fs-5" id="exampleModalLabel">
+                    <strong>
+                      <i class="bi bi-exclamation-triangle"></i> Irreversible action!
+                    </strong>
+                  </h5>
                 </div>
                 <div class="modal-body fs-6">
                   <p>
-                    Are you sure you want to delete the product "<strong>{{ product['product_name']|title }}</strong>"?
+                    Are you sure you want to delete this product?
+                  </p>
+                  <p>
+                    <strong>{{ product['product_name']|title }}</strong>
                   </p>
                   <small class="fw-bold text-danger">
                     This action cannot be undone.
                   </small>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">No</button>
                   <form action="{{ url_for('products.delete_product', id=product['id']) }}" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-danger">Yes</button>
                   </form>

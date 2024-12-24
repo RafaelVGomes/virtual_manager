@@ -28,15 +28,19 @@
 <div class="modal fade" id="jsModal" tabindex="-1" aria-labelledby="jsFormModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-dark text-white">
         <h1 class="modal-title fs-5" id="jsFormModalLabel">
-          <i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!
+        <strong>
+          <i class="bi bi-exclamation-triangle"></i> Irreversible action!
+        </strong>
         </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body fs-6">
         <!-- JS text insertion -->
         <p class="text-start" id="js-modal-body-text"></p>
+        <small class="fw-bold text-danger">
+          This action cannot be undone.
+        </small>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
@@ -52,15 +56,19 @@
 <div class="modal fade" id="dbModal" tabindex="-1" aria-labelledby="dbFormModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header bg-dark text-white">
         <h1 class="modal-title fs-5" id="dbFormModalLabel">
-          <i class="bi bi-exclamation-triangle-fill text-danger"></i> Irreversible action!
+        <strong>
+          <i class="bi bi-exclamation-triangle"></i> Irreversible action!
+        </strong>
         </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body fs-6">
         <!-- JS text insertion -->
         <p class="text-start" id="db-modal-body-text"></p>
+        <small class="fw-bold text-danger">
+          This action cannot be undone.
+        </small>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
