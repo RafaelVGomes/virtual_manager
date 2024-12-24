@@ -1,8 +1,8 @@
 from flask import (Blueprint, abort, flash, g, redirect, render_template, request,
                    url_for)
 
-from ...auth.view.auth import login_required
-from ....db import get_db
+from virtual_manager.src.auth.views import login_required
+from virtual_manager.db import get_db
 
 
 def validate_form(form):
