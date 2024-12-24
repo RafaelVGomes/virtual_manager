@@ -39,7 +39,7 @@ def validate_registration_data(form):
   return errors
 
 
-bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder='../html', static_folder='../../auth')
+bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder='./html', static_folder='../../auth')
 
 @bp.before_app_request
 def load_logged_in_user():
