@@ -3,7 +3,7 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template, reques
 
 from .form import get_data_to_save, get_form, get_form_data, validate_form
 from virtual_manager.db import get_db
-from virtual_manager.src.auth.view.auth import login_required
+from virtual_manager.src.auth.views import login_required
 
 
 bp = Blueprint('items', __name__, url_prefix='/items', template_folder='./html', static_folder='../../items')
