@@ -13,17 +13,21 @@ bp = Blueprint('items', __name__, url_prefix='/items', template_folder='./html',
 def overview():
   """List all items in stock."""
   db = get_db()
-  items = db.execute("SELECT * FROM items WHERE user_id = ? ORDER BY items.item_name ASC;", (g.user['id'],)).fetchall()
+  items = db.execute("""--sql
+    SELECT id, item_name, amount, measure
+    FROM items WHERE user_id = ?
+    ORDER BY items.item_name ASC;""", (g.user['id'],)
+  ).fetchall()
   return render_template("items.html", items=items)
 
 @bp.route("/create-item", methods=["GET", "POST"])
 @login_required
 def create_item():
   """Create item."""
-  form = get_form_data()
+  form = get_form()
 
   if request.method == "POST":
-    form = get_form(request)
+    form = get_form(request=request)
     
     if validate_form(form):
       form_to_save = get_data_to_save(form)
@@ -32,8 +36,8 @@ def create_item():
         db = get_db()
         db.execute(
           """--sql
-          INSERT INTO items (user_id, item_name, amount, measure, quantity_alert, price)
-          VALUES (:user_id, :item_name, :amount, :measure, :quantity_alert, :price);
+          INSERT INTO items (user_id, item_name, measure)
+          VALUES (:user_id, :item_name, :measure);
           """, form_to_save
         )
         db.commit()
@@ -50,10 +54,10 @@ def create_item():
 def update_item(id):
   """Modify item."""
   db = get_db()
-  form = get_form_data(id)
+  form = get_form(id=id)
 
   if request.method == "POST":
-    form = get_form(request)
+    form = get_form(request=request)
     
     if validate_form(form):
       form_to_save = get_data_to_save(form)
@@ -63,10 +67,7 @@ def update_item(id):
           """--sql
           UPDATE items SET
             item_name = :item_name,
-            amount = :amount,
-            measure = :measure,
-            quantity_alert = :quantity_alert,
-            price = :price
+            measure = :measure
           WHERE id = :id AND user_id = :user_id;
           """, form_to_save
         )

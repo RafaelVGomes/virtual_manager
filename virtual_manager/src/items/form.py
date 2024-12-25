@@ -6,12 +6,12 @@ from flask import Request, abort, flash, g
 from virtual_manager.db import get_db
 
 class Attrs(TypedDict, total=False):
-  min: str
-  step: str
+  min: int
+  step: int
 
 class FormField(TypedDict):
   name: str
-  value: Union[str, int, float]
+  value: Union[str | int | float]
   type: Optional[Literal['text', 'number']]
   attrs: Optional[Attrs]
 
@@ -46,49 +46,53 @@ FORM_DATA: list[FormField] = [
   }
 ]
 
-def get_form_data(id: Optional[int]=None) -> list[FormField]:
-  db = get_db()
-  new_form = deepcopy(FORM_DATA)
+exclude = ['amount', 'price', 'quantity_alert']
+
+def get_form(id: Optional[int]=None, request: Optional[Request]=None, exclude: Optional[list[str]]=exclude) -> list[FormField]:
+  form = []
   
-  if id:
-    item = db.execute(
-      "SELECT * FROM items WHERE id = ? AND user_id = ?;", (id, g.user['id'])
-    ).fetchone()
+  if exclude:
+    form = [field for field in deepcopy(FORM_DATA) if field['name'] not in exclude]
+  else:
+    form = [field for field in deepcopy(FORM_DATA)]
+
+  if request:
+    id = request.view_args.get('id')
+    for field in form:
+      if field['name'] not in exclude:
+        if field['type'] == 'text':
+          field['value'] = request.form.get(field['name']).lower()
+        elif field['type'] == None:
+          field['value'] = request.form.get(field['name'])
+        elif field['type'] == 'number' and 'step' in field['attrs'].keys():
+          field['value'] = request.form.get(field['name'], type=float)
+        else:
+          field['value'] = request.form.get(field['name'], type=int)
+  elif id:
+    db = get_db()
+    fields = [field['name'] for field in form]
+    fields = ', '.join(fields)
+    query = f"SELECT {fields} FROM items WHERE id = ? AND user_id = ?;"
+    item = db.execute(query, (id, g.user['id'])).fetchone()
 
     if not item:
       abort(404, description="Item not found or you do not have permission to access it.")
     
-    item_dict = dict(item)
+    item_data = dict(item)
     
-    for key, value in item_dict.items():
-      for field in new_form:
+    for field in form:
+      for key, value in item_data.items():
         if field['name'] == key:
           field['value'] = value
-    
-  return new_form
-
-def get_form(request: Request) -> list[FormField]:
-  id = request.view_args.get('id')
-  received_form = get_form_data()
-
-  for field in received_form:
-    if field['type'] == 'text':
-      field['value'] = request.form.get(field['name']).lower()
-    elif field['type'] == None:
-      field['value'] = request.form.get(field['name'])
-    elif field['type'] == 'number' and 'step' in field['attrs'].keys():
-      field['value'] = request.form.get(field['name'], type=float)
-    else:
-      field['value'] = request.form.get(field['name'], type=int)
   
   if id:
-    received_form.append({
+    form.append({
       'name': 'id',
       'type': 'number',
-      'value': id
+      'value': int(id)
     })
   
-  return received_form
+  return form
 
 def validate_form(form: list[FormField]) -> bool:
   """Validate item form."""
@@ -109,8 +113,8 @@ def validate_form(form: list[FormField]) -> bool:
     if field['name'] == 'quantity_alert' and not (field['value'] or field['value'] < 0):
       errors['quantity_alert'] = "Quantity alert must be zero or greater."
 
-    # if field['name'] == 'price' and not field['value']:
-    #   errors['price'] = "Price must be zero or greater."
+    if field['name'] == 'price' and not field['value']:
+      errors['price'] = "Price must be zero or greater."
 
   if errors:
     flash('Fill all required fields!#warning', 'messages')

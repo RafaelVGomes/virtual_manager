@@ -14,10 +14,7 @@
     <thead>
       <tr>
         <th>Item</th>
-        <th>Amount</th>
         <th>Measure</th>
-        <th>Purchase Price</th>
-        <th>Quantity Alert</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -26,12 +23,7 @@
         {% for item in items %}
           <tr>
             <td>{{ item['item_name']|title }}</td>
-            <td>{{ item['amount'] }}</td>
             <td>{{ item['measure'] }}</td>
-            <td id="{{ item['item_name'] }}-price">
-              {{ item['price']|usd }}
-            </td>
-            <td>{{ item['quantity_alert'] }}</td>
             <td>
               <div class="d-flex justify-content-center">
                 <a href="{{ url_for('items.update_item', id=item['id']) }}" role="button" class="btn btn-primary me-2">
