@@ -1,4 +1,6 @@
-import { toast } from "../../../static/components/toast.js"
+import { toast } from "../../../static/components/toast.js";
+
+const selectedItems = new Set(); // Global tracker for selected items
 
 $(document).ready(function () {
   $('#addJsFormBtn').on('click', () => { create_js_form() })
@@ -6,6 +8,7 @@ $(document).ready(function () {
   $('#delDbFormBtn').on('click', (e) => { delete_db_form(e.currentTarget) })
   $('#jsModal').on('show.bs.modal', (e) => { update_js_modal(e.relatedTarget) })
   $('#dbModal').on('show.bs.modal', (e) => { update_db_modal(e.relatedTarget) })
+  updateItemOptions(); // Ensure options are updated for the new field
   check_forms()
 })
 
@@ -40,6 +43,8 @@ function create_js_form() {
   $('#inline-forms').append(`<!-- JS form ${index} -->`).append(form)
   index++
   $('#recipesIndex').val(index)
+
+  updateItemOptions(); // Ensure options are updated for the new field
   check_forms()
 }
 
@@ -107,6 +112,8 @@ function delete_db_form(click_btn) {
 }
 
 function check_forms() {
+  const totalItems = $('#inline-forms').data('total-items')
+  const totalForms = $('#inline-forms').find('.dynamic-form').length
   const saveBtn = $('#recipe-save-btn')
   const forms = $('#inline-forms')
   const text = $('<div class="row align-items-center justify-content-center my-3" id="inline-forms-text">Add an item form.</div>')
@@ -117,4 +124,49 @@ function check_forms() {
     forms.find('#inline-forms-text').remove()
     saveBtn.attr('disabled', false)
   }
+  
+  $('#addJsFormBtn').prop('disabled', totalItems === totalForms ? true : false)
+  
 }
+
+ // Function to update all select options dynamically
+ function updateItemOptions() {
+  // Initialize selected items on page load
+  $('.item-select').each(function () {
+    const currentValue = $(this).val(); // Current value of this select
+    if (currentValue) {
+      selectedItems.add(currentValue); // Add the selected value to the tracker
+    }
+  });
+
+  // Update visibility of options in all selects
+  $('.item-select').each(function () {
+    const currentValue = $(this).val(); // Current value of this select
+    $(this)
+      .find('option')
+      .each(function () {
+        const optionValue = $(this).attr('value');
+        if (optionValue !== currentValue && selectedItems.has(optionValue)) {
+          $(this).hide(); // Hide option if it's selected elsewhere
+        } else {
+          $(this).show(); // Show option if it's available
+        }
+      });
+  });
+}
+
+// Handle change event for dynamic selects
+$(document).on('change', '.item-select', function () {
+  const previousValue = $(this).data('previous') || ''; // Previous value
+  const newValue = $(this).val(); // New value
+
+  if (previousValue) {
+    selectedItems.delete(previousValue); // Remove previous value from tracker
+  }
+  if (newValue) {
+    selectedItems.add(newValue); // Add new value to tracker
+  }
+
+  $(this).data('previous', newValue); // Update previous value tracker
+  updateItemOptions(); // Refresh options dynamically
+});

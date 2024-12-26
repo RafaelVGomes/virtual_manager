@@ -5,56 +5,50 @@
 {% endblock title %}
 
 {% block main %}
-  <table class="table table-hover align-middle">
-    <thead>
-      <tr>
-        <th>Products</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% if recipes %}
-        <tr>
-          <td>
-            <div class="accordion" id="recipes-accordion">
-              {% for recipe in recipes %}
-                <div class="accordion-item">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ recipes.product_id }}-{{ recipe.product_name|kebab_case }}" aria-expanded="false" aria-controls="{{ recipe.product_name|kebab_case }}">
-                      {{ recipe.product_name|title }}
-                    </button>
-                  </h2>
-                  <div id="{{ recipes.product_id }}-{{ recipe.product_name|kebab_case }}" class="accordion-collapse collapse" data-bs-parent="#recipes-accordion">
-                    <div class="accordion-body">
-                      {% if recipe.items_list[0] != None %}
-                        {% for item in recipe.items_list %}
-                          <li class="text-start">{{ item['recipe_amount'] }}x {{ item['name']|title }}</li>
-                        {% endfor %}
-                      {% else %}
-                        <li class="text-start">No recipe</li>
-                      {% endif %}
-                      <div class="d-flex justify-content-center">
-                        {% if recipe.items_list[0] == None %}
-                          <a href="{{ url_for('recipes.create_recipe', product_id=recipe.product_id) }}" role="button" class="btn btn-success me-2">
-                            <i class="bi bi-file-earmark-plus"></i> Create Recipe
-                          </a>
-                        {% else %}
-                          <a href="{{ url_for('recipes.update_recipe', product_id=recipe.product_id) }}" role="button" class="btn btn-primary me-2">
-                            <i class="bi bi-pencil-square"></i> Update Recipe
-                          </a>
-                        {% endif %}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
+  {% if recipes %}
+    <div class="accordion" id="recipes-accordion">
+      {% for recipe in recipes %}
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ recipes.product_id }}-{{ recipe.product_name|kebab_case }}" aria-expanded="false" aria-controls="{{ recipe.product_name|kebab_case }}">
+              {{ recipe.product_name|title }}
+            </button>
+          </h2>
+          <div id="{{ recipes.product_id }}-{{ recipe.product_name|kebab_case }}" class="accordion-collapse collapse" data-bs-parent="#recipes-accordion">
+            <div class="accordion-body">
+              {% if recipe.items_list[0] != None %}
+                {% for item in recipe.items_list %}
+                  <li class="text-start">{{ item['recipe_amount'] }}x {{ item['name']|title }}</li>
+                {% endfor %}
+              {% else %}
+                <li class="text-start">No recipe</li>
+              {% endif %}
+              <div class="d-flex justify-content-center">
+                {% if recipe.items_list[0] == None %}
+                  <a href="{{ url_for('recipes.create_recipe', product_id=recipe.product_id) }}" role="button" class="btn btn-success me-2">
+                    <i class="bi bi-file-earmark-plus"></i> Create Recipe
+                  </a>
+                {% else %}
+                  <a href="{{ url_for('recipes.update_recipe', product_id=recipe.product_id) }}" role="button" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil-square"></i> Update Recipe
+                  </a>
+                {% endif %}
+              </div>
             </div>
-          </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td>Add some products with recipes.</td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <h5>No products with recipes enabled.</h5>
+  {% endif %}
+  {# <table class="table table-hover align-middle"> #}
+    {# <thead> #}
+      {# <tr> #}
+        {# <th>Products</th> #}
+      {# </tr> #}
+    {# </thead> #}
+    {# <tbody> #}
+    {# </tbody> #}
+  {# </table> #}
 {% endblock main %}

@@ -6,7 +6,7 @@
     <!-- BASE form for JS-->
     {% include "./partials/recipe-base-form.html" %}
     <!-- Forms -->
-    <div class="col-5 border border-primary rounded" id="inline-forms">
+    <div class="col-5 border border-primary rounded" id="inline-forms" data-total-items="{{ items|length }}">
       {% if recipes|length > 0 %}
         {% for recipe in recipes %}
           {% if recipe['index'] and recipe['index'] > 0 %}

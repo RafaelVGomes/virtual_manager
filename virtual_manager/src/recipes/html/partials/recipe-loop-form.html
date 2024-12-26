@@ -1,7 +1,7 @@
 {% from "partials/macros.html" import error %}
 
 {% if recipe['id'] %}<!-- DB form {{ index }} -->{% else %}<!-- JS form {{ index }} -->{% endif %}
-<div class="row align-items-center justify-content-center m-3" id="inlineRecipe{{ index }}">
+<div class="row align-items-center justify-content-center m-3 dynamic-form" id="inlineRecipe{{ index }}">
   <input type="hidden" name="recipeId{{ index }}" id="recipeId{{ index }}" value="{{ recipe['id'] }}">
   <div class="col-auto align-self-center">
     <!-- Modal trigger button -->
@@ -15,7 +15,7 @@
   <div class="col-sm form-floating align-self-center">
     {% if items %}
       <input type="hidden" name="recipe{{ index }}" id="itemRecipeName{{ index }}" value="{{ recipe['item_name'] }}">
-      <select class="form-select" name="itemRecipe{{ index }}" id="itemRecipe{{ index }}" aria-label="Items to add">
+      <select class="form-select item-select" name="itemRecipe{{ index }}" id="itemRecipe{{ index }}" aria-label="Items to add" required>
         <option value="0,-----------"
           {% if  recipe.get('item_id') == "" %}
             selected 
@@ -41,7 +41,7 @@
   <div class="col-sm form-floating align-self-start">
     <input type="hidden" name="itemRecipeAmount{{ index }}" id="itemRecipeAmount{{ index }}" value="{{ recipe['item_amount'] }}">
     <input autocomplete="off" class="form-control" name="amountRecipe{{ index }}" id="amountRecipe{{ index }}" placeholder="Qnt"
-      type="number" step="1" min="0" value="{{ recipe['item_amount'] }}">
+      type="number" step="1" min="0" value="{{ recipe['item_amount'] }}" required>
     <label>Amount</label>
     {{ error("amountRecipe"~index) }}
   </div>
