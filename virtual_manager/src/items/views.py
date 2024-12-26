@@ -1,7 +1,7 @@
 from flask import (Blueprint, abort, flash, g, redirect, render_template, request,
                    url_for)
 
-from .form import get_data_to_save, get_form, get_form_data, validate_form
+from .form import get_data_to_save, get_form, validate_form
 from virtual_manager.db import get_db
 from virtual_manager.src.auth.views import login_required
 
