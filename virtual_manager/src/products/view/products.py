@@ -11,25 +11,10 @@ def validate_form(form):
   if not form['product_name']:
     errors['product_name'] = "Please enter a name for this product."
 
-  try:
-    if form['amount'] is None or form['amount'] < 0:
-      errors['amount'] = "Please enter a valid positive number."
-  except ValueError:
-    errors['amount'] = "Invalid amount. Must be a number."
-    
   if not form['measure']:
     errors['measure'] = "Please select a measure."
   elif form['measure'] not in ['kg', 'L', 'pcs']:
     errors['measure'] = "Invalid measure."
-
-  try:
-    if form['quantity_alert'] is None or form['quantity_alert'] < 0:
-      errors['quantity_alert'] = "Please enter a valid positive number."
-  except ValueError:
-    errors['quantity_alert'] = "Invalid quantity alert. Must be a number."
-
-  if not form['price']:
-    errors['price'] = "Please enter a price."
 
   if form['has_recipe'] not in [0, 1]:
     errors['has_recipe'] = "Invalid option."
@@ -52,7 +37,11 @@ def overview():
   """List all products on stock"""
   db = get_db()
   user_id = g.user['id']
-  products = db.execute("SELECT * FROM products WHERE user_id = ? ORDER BY products.product_name ASC;", (user_id,)).fetchall()
+  products = db.execute("""--sql
+    SELECT id, product_name, measure, has_recipe
+    FROM products WHERE user_id = ?
+    ORDER BY products.product_name ASC;
+  """, (user_id,)).fetchall()
   return render_template("products.html", products=products)
 
 
@@ -69,22 +58,17 @@ def create_product():
   if request.method == "POST":
     form = {
       'product_name': request.form.get("product_name").lower(),
-      'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
-      'quantity_alert': request.form.get("quantity_alert", type=int),
-      'price': request.form.get("price", type=float),
       'has_recipe': request.form.get("has_recipe", type=int)
     }
     
     if validate_form(form):
       try:    
-        form['user_id'] = g.user['id']
-        
         prod_id = db.execute(
           """--sql
-          INSERT INTO products (user_id, product_name, amount, measure, quantity_alert, price, has_recipe)
-          VALUES (:user_id, :product_name, :amount, :measure, :quantity_alert, :price, :has_recipe);
-          """, (form)
+          INSERT INTO products (user_id, product_name, measure, has_recipe)
+          VALUES (:user_id, :product_name, :measure, :has_recipe);
+          """, {'user_id': g.user['id'], **form}
         ).lastrowid
 
         db.commit()
@@ -119,7 +103,7 @@ def update_product(id):
   product = db.execute("SELECT * FROM products WHERE id = ? AND user_id = ?;", (id, g.user['id'])).fetchone()
 
   if not product:
-    abort(404, description="Product not found or you do not have permission to delete it.")
+    abort(404, description="Product not found.")
 
   if request.method == "GET":
     return render_template("product-detail.html", form=dict(product))
@@ -128,10 +112,7 @@ def update_product(id):
     form = {
       'id': product['id'],
       'product_name': request.form.get("product_name").lower(),
-      'amount': request.form.get("amount", type=int),
       'measure': request.form.get("measure"),
-      'quantity_alert': request.form.get("quantity_alert", type=int),
-      'price': request.form.get("price", type=float),
       'has_recipe': request.form.get("has_recipe", type=int)
     }
 
@@ -141,10 +122,7 @@ def update_product(id):
           """--sql
           UPDATE products SET
             product_name = :product_name,
-            amount = :amount,
             measure = :measure,
-            quantity_alert = :quantity_alert,
-            price = :price,
             has_recipe = :has_recipe
           WHERE id = :id AND user_id = :user_id
           """, {**form, 'user_id': g.user['id']}

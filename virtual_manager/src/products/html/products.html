@@ -14,10 +14,7 @@ Products
     <thead>
       <tr>
         <th>Product</th>
-        <th>Amount</th>
         <th>Measure</th>
-        <th>Sale Price</th>
-        <th>Quantity Alert</th>
         <th>Has Recipe?</th>
         <th>Actions</th>
       </tr>
@@ -27,12 +24,7 @@ Products
         {% for product in products %}
           <tr>
             <td>{{ product['product_name']|title }}</td>
-            <td>{{ product['amount'] }}</td>
             <td>{{ product['measure'] }}</td>
-            <td id="{{ product['product_name'] }}-price">
-              {{ product['price']|usd }}
-            </td>
-            <td>{{ product['quantity_alert'] }}</td>
             <td>
               {% if product['has_recipe'] == 0 %}
                 No
