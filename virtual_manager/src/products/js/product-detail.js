@@ -2,8 +2,9 @@ $(document).ready(function () {
   // Event triggered when the has_recipe field changes
   $('[name="has_recipe"]').change(function () {
     const hasRecipeValue = $(this).val();
+    const action = $(this).data('action'); // Get action type (e.g., 'update')
 
-    if (hasRecipeValue === '0') {
+    if (action === 'update' && hasRecipeValue === '0') {
       // Display the modal
       $('#has-recipe-modal').modal({
         backdrop: 'static', // Prevent closing by clicking outside

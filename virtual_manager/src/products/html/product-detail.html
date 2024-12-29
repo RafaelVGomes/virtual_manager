@@ -33,6 +33,7 @@
         <p>Does this product have a recipe?</p>
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="has_recipe" id="has_recipe0" value="0"
+            data-action="{{ action }}"
             {% if form.get('has_recipe', 0) == 0 %}
               checked
             {% endif %}
@@ -41,6 +42,7 @@
         </div>
         <div class="form-check form-check-inline mb-3">
           <input class="form-check-input" type="radio" name="has_recipe" id="has_recipe1" value="1"
+            data-action="{{ action }}"
             {% if form.get('has_recipe', 0) == 1 %}
               checked
             {% endif %}
