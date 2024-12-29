@@ -126,7 +126,6 @@ function check_forms() {
   }
   
   $('#addJsFormBtn').prop('disabled', totalItems === totalForms ? true : false)
-  
 }
 
  // Function to update all select options dynamically
