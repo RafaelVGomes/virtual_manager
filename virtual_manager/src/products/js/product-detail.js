@@ -2,7 +2,7 @@ $(document).ready(function () {
   // Event triggered when the has_recipe field changes
   $('[name="has_recipe"]').change(function () {
     const hasRecipeValue = $(this).val();
-    const action = $(this).data('action'); // Get action type (e.g., 'update')
+    const action = $(this).data('action').toLowerCase(); // Get action type (e.g., 'update')
 
     if (action === 'update' && hasRecipeValue === '0') {
       // Display the modal
