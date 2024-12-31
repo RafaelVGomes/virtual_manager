@@ -42,7 +42,7 @@ def create_item():
         )
         db.commit()
         flash("Item created successfully!#success", 'messages')
-        return redirect(url_for("items.overview"))
+        return redirect(url_for("items.create_item"))
       except db.IntegrityError:
         flash("Item not created. Name must be unique.#danger", 'messages')
     return render_template("item-detail.html", form=form)
