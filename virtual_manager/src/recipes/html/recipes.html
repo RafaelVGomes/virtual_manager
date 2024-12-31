@@ -5,8 +5,9 @@
 {% endblock title %}
 
 {% block main %}
+  <h3>Recipes</h3>
+  
   {% if recipes %}
-    <h3>Recipes</h3>
     <div class="accordion mb-3" id="recipes-accordion">
       {% for recipe in recipes %}
         <div class="accordion-item">
