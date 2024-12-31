@@ -3,6 +3,7 @@
   <table class="table table-hover align-middle">
     <thead>
       <tr>
+        <th class="col-1">Stock</th>
         <th>Product</th>
         <th>Amount</th>
         <th>Measure</th>
@@ -12,6 +13,11 @@
       {% if products %}
       {% for product in products %}
       <tr>
+        <td class="col-1">
+          {% if product['amount'] <= product['quantity_alert'] %}
+            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+          {% endif %}
+        </td>
         <td>{{ product['product_name']|title }}</td>
         <td>{{ product['amount'] }}</td>
         <td>{{ product['measure'] }}</td>
@@ -34,7 +40,7 @@
   <table class="table table-hover align-middle">
     <thead>
       <tr>
-        <th class="col-1">Stock Low</th>
+        <th class="col-1">Stock</th>
         <th>Item</th>
         <th>Amount</th>
         <th>Measure</th>
@@ -45,9 +51,9 @@
       {% for item in items %}
       <tr>
         <td class="col-1">
-          {% if item['amount'] <= item['quantity_alert'] %} <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-            {% else %}
-            {% endif %}
+          {% if item['amount'] <= item['quantity_alert'] %}
+            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+          {% endif %}
         </td>
         <td>{{ item['item_name']|title }}</td>
         <td>{{ item['amount'] }}</td>
