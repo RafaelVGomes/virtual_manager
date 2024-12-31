@@ -6,7 +6,8 @@
 
 {% block main %}
   {% if recipes %}
-    <div class="accordion" id="recipes-accordion">
+    <h3>Recipes</h3>
+    <div class="accordion mb-3" id="recipes-accordion">
       {% for recipe in recipes %}
         <div class="accordion-item">
           <h2 class="accordion-header">
@@ -42,13 +43,4 @@
   {% else %}
     <h5>No products with recipes enabled.</h5>
   {% endif %}
-  {# <table class="table table-hover align-middle"> #}
-    {# <thead> #}
-      {# <tr> #}
-        {# <th>Products</th> #}
-      {# </tr> #}
-    {# </thead> #}
-    {# <tbody> #}
-    {# </tbody> #}
-  {# </table> #}
 {% endblock main %}
