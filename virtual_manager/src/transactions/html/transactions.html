@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Restock
+{% endblock title %}
+
+{% block main %}
+  <link href="{{ url_for('transactions.static', filename='css/transactions.css') }}" rel="stylesheet">
+  <script type="module" src="{{ url_for('transactions.static', filename='js/transactions.js')}}"></script>
+
+  {% if recipes %}
+    <h3>Production</h3>
+    <div class="accordion" id="recipes-accordion" data-items="{{ items }}">
+      {% for recipe in recipes %}
+        {% set prod_name = recipe.product_name %}
+        {% set prod_id = recipe.product_id %}
+        <div class="accordion-item" data-product-id="{{ prod_id }}">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ prod_name|kebab_case }}-{{ prod_id }}" aria-expanded="false" aria-controls="{{ prod_name|kebab_case }}">
+              {{ prod_name|title }}
+            </button>
+          </h2>
+          <div id="{{ prod_name|kebab_case }}-{{ prod_id }}" class="accordion-collapse collapse" data-bs-parent="#recipes-accordion">
+            <div class="accordion-body" id="{{ prod_id }}-items">
+              {% if recipe.items_list[0] != None %}
+                <div>
+                  {% for item in recipe.items_list %}
+                    <li class="text-start" id="{{ prod_id }}-{{ item['id'] }}" data-id="{{ item['id'] }}">
+                      <strong id="{{ prod_id }}-{{ item['id'] }}-total">{{ item['total'] }}</strong> - 
+                      <span id="{{ prod_id }}-{{ item['id'] }}-demand">{{ item['demand'] }}</span>x 
+                      {{ item['name']|title }} 
+                    </li>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <li class="text-start">No recipe</li>
+              {% endif %}
+              <div class="d-flex justify-content-center">
+                {% set input_id = prod_id~"-input" %}
+                <button class="btn btn-primary decrement" id="{{ prod_id }}-decrement" data-product-id="{{ prod_id }}"><i class="bi bi-caret-left-fill"></i></button>
+                <input type="number" id="{{ input_id }}" class="form-control mx-2 dynamic-width" min="0" value="{{ recipe.product_amount|default(0) }}">
+                <button class="btn btn-primary increment" id="{{ prod_id }}-increment" data-product-id="{{ prod_id }}"><i class="bi bi-caret-right-fill"></i></button>                
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock main %}
