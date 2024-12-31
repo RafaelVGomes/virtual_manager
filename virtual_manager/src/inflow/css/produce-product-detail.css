@@ -1,0 +1,18 @@
+/* Hide number input controls */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox support */
+}
+
+/* Dynamic width inputs */
+.dynamic-width {
+  width: auto; /* Allow JavaScript to handle width */
+  text-align: center; /* Center text inside the input */
+  padding: 0.5rem; /* Optional: Adjust padding for consistent spacing */
+  box-sizing: content-box; /* Ensure padding doesn't affect calculated width */
+}

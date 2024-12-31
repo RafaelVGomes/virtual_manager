@@ -42,6 +42,8 @@ def create_app(test_config=None):
     app.register_blueprint(src.items.bp)
     app.register_blueprint(src.products.bp)
     app.register_blueprint(src.recipes.bp)
+    app.register_blueprint(src.inflow.bp)
+    app.register_blueprint(src.outflow.bp)
     app.register_blueprint(src.transactions.bp)
 
     return app

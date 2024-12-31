@@ -49,6 +49,24 @@ def overview():
   db = get_db()
   context = {}
 
+  db_items = db.execute(
+    """--sql
+    SELECT *
+    FROM items WHERE user_id = ?
+    """, (g.user['id'],)
+  ).fetchall()
+  
+  context['items'] = db_items
+  # for db_item in db_items:
+  #   for k in db_item.keys():
+  #     if k == "id":
+  #       context['items'][db_item[k]] = {}
+  #     if k == "quantity_alert":
+  #       context['items'][db_item['id']]['alert'] = db_item[k]
+  #     elif k == "amount":
+  #       context['items'][db_item['id']]['total'] = db_item[k]
+  # context['items'] = json.dumps(context['items'])
+
   db_recipes = db.execute(
     """--sql
     SELECT p.id AS product_id, p.product_name, p.amount AS product_amount,
@@ -91,25 +109,73 @@ def overview():
   #   ORDER BY products.product_name ASC;
   # """, (g.user['id'],)).fetchall()
 
-  db_items = db.execute(
+  
+  return render_template("transactions.html", **context)
+
+@bp.route("/inflow")
+@login_required
+def inflow():
+  """List all registered items, products and recipes"""
+  db = get_db()
+  context = {}
+
+  context['items'] = db.execute(
     """--sql
-    SELECT id, quantity_alert, amount
+    SELECT *
     FROM items WHERE user_id = ?
     """, (g.user['id'],)
   ).fetchall()
   
-  context['items'] = {}
-  for db_item in db_items:
-    for k in db_item.keys():
-      if k == "id":
-        context['items'][db_item[k]] = {}
-      if k == "quantity_alert":
-        context['items'][db_item['id']]['alert'] = db_item[k]
-      elif k == "amount":
-        context['items'][db_item['id']]['total'] = db_item[k]
-  context['items'] = json.dumps(context['items'])
+
+  # db_recipes = db.execute(
+  #   """--sql
+  #   SELECT p.id AS product_id, p.product_name, p.amount AS product_amount,
+  #     json_group_array(
+  #       json_object(
+  #         'recipe_id', r.id,
+  #         'id', r.item_id,
+  #         'name', r.item_name,
+  #         'demand', r.item_amount
+  #       )
+  #     ) AS items_list
+  #   FROM products p
+  #   LEFT JOIN (
+  #     SELECT r.id, r.product_id,r.user_id, r.item_id, r.item_amount, i.item_name
+  #     FROM recipes r
+  #     LEFT JOIN items i ON r.item_id = i.id
+  #     ORDER BY i.item_name ASC
+  #   ) r ON r.product_id = p.id AND r.user_id = ?
+  #   WHERE p.has_recipe = 1 AND p.user_id = ?
+  #   GROUP BY p.id, p.product_name;
+  #   """, (g.user['id'], g.user['id'])
+  # ).fetchall()
+
+  # context['recipes'] = []
+  # for db_recipe in db_recipes:
+  #   recipe = {}
+  #   for k in db_recipe.keys():
+  #     if k == 'items_list':
+  #       recipe[k] = json.loads(db_recipe[k])
+  #       if recipe['items_list'][0]['recipe_id'] == None:
+  #         recipe['items_list'] = [None]
+  #     else:
+  #       recipe[k] = db_recipe[k]
+
+  #   context['recipes'].append(recipe)
+
+  # context['products'] = db.execute("""--sql
+  #   SELECT id, product_name, measure, has_recipe
+  #   FROM products WHERE user_id = ?
+  #   ORDER BY products.product_name ASC;
+  # """, (g.user['id'],)).fetchall()
+
   
-  return render_template("transactions.html", **context)
+  return render_template("inflow.html", **context)
+
+@bp.route("/outflow")
+@login_required
+def outflow():
+  pass
 
 @bp.route("/restock", methods=["GET", "POST"])
 @login_required

@@ -9,11 +9,20 @@ $(document).ready(function () {
 
 // global control
 const items = JSON.parse($('#recipes-accordion').attr('data-items'))
-let itemsTemp = JSON.parse($('#recipes-accordion').attr('data-items'))
-const itemsCtrl = {}
+const itemsTemp = JSON.parse($('#recipes-accordion').attr('data-items'))
+
+// controls items state
+function doTheItemsMath (item_id) {
+  // Reverts to original state if inputValue is 0
+  if (inputValue > 0) {
+    total = itemsTemp[itemId].total - demanded
+  } else {
+    total = itemsTemp[itemId].total + demanded
+  }
+}
 
 // checks accordion data and handles text colors and buttons states
-function checkAccordionData() {
+function checkAccordionData(recipe=false) {
   const prod_id = $(this).data("product-id")
   const input = $(`#${prod_id}-input`)
   const inputValue = parseInt(input.val()) || 0;
@@ -27,18 +36,8 @@ function checkAccordionData() {
     const demand = parseInt(demandEl.text())
     const demanded = inputValue * demand
     const totalEl = $(`#${elementId}-total`)
-    let total = undefined
+    const total = itemsTemp[itemId].total
     
-    // Reverts to original state if inputValue is 0
-    if (inputValue > 0) {
-      total = itemsTemp[itemId].total - demanded
-    } else {
-      total = items[itemId].total + demanded
-    }
-    
-    itemsTemp[itemId].total = total
-    // itemsCtrl[prod_id] = total
-
     totalEl.text(total)
     
     if (demanded < total) {

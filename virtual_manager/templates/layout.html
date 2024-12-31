@@ -44,8 +44,8 @@
               <li class="nav-item"><a class="nav-link" href="{{ url_for('items.overview') }}">Items</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('products.overview') }}">Products</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('recipes.overview') }}">Recipes</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('transactions.overview') }}">Restock</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="/sale">Sales</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('inflow.overview') }}">Inflow</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('outflow.overview') }}">Outflow</a></li>
             </ul>
             <ul class="navbar-nav ms-auto mt-2">
               <li class="navbar-text text-info me-3">User: <b>{{ g.user['username'] }}</b></li>

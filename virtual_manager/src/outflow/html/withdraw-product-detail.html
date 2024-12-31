@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% block title %}
+  Outflow - Withdraw: Product
+{% endblock title %}
+
+{% block main %}
+  <h4 class="mb-3">Withdraw Product</h4>
+  <form action="{{ request.path }}" method="POST">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <div class="mb-3">
+          <h3>[{{ form.amount }}] {{ form.product_name|title }}</h3>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="number" name="amount" class="form-control" id="amount" value="1" min="1" max="{{ form.amount }}" required>
+          <label for="amount">Amount</label>
+        </div>
+        <div>
+          <button class="btn btn-success" type="submit">Save</button>
+          <a href="{{ url_for('outflow.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock main %}

@@ -1,14 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Restock
+  Inflow
 {% endblock title %}
 
 {% block main %}
-  <link href="{{ url_for('transactions.static', filename='css/transactions.css') }}" rel="stylesheet">
-  <script type="module" src="{{ url_for('transactions.static', filename='js/transactions.js')}}"></script>
-
-  <h3>Restock</h3>
+  <h3 class="mb-3">Inflow</h3>
 
   {% if items %}
     <h3>Items</h3>
@@ -22,18 +19,46 @@
           </h2>
           <div id="{{ item.item_name|kebab_case }}-{{ item.id }}" class="accordion-collapse collapse" data-bs-parent="#items-accordion">
             <div class="accordion-body">
-              <strong>{{item.amount}}</strong>
+              <div class="d-flex justify-content-start">
+                - Alerts when reaches: {{ item.quantity_alert }}
+              </div>
               <div class="d-flex justify-content-center">
-                <button class="btn btn-primary decrement" id="item-{{ item.id }}-decrement" data-product-id="{{ prod_id }}"><i class="bi bi-caret-left-fill"></i></button>
-                <input type="number" id="{{ input_id }}" class="form-control mx-2 dynamic-width" min="0" placeholder="0">
-                <button class="btn btn-primary increment" id="item-{{ item.id }}-increment" data-product-id="{{ prod_id }}"><i class="bi bi-caret-right-fill"></i></button>                
+                <a href="{{ url_for('inflow.supply_item', id=item['id']) }}" role="button" class="btn btn-success me-2">
+                  <strong>Supply</strong>
+                </a>
               </div>
             </div>
           </div>
         </div>
       {% endfor %}
     </div>
-  {% else %}
+  {% endif %}
+
+  {% if products %}
+    <h3>Products</h3>
+    <div class="accordion mb-3" id="products-accordion">
+      {% for product in products %}
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ product.product_name|kebab_case }}-{{ product.id }}" aria-expanded="false" aria-controls="{{ product.product_name|kebab_case }}">
+              <span><strong id="">[{{ product.amount }}] </strong> {{ product.product_name|title }}</span>
+            </button>
+          </h2>
+          <div id="{{ product.product_name|kebab_case }}-{{ product.id }}" class="accordion-collapse collapse" data-bs-parent="#products-accordion">
+            <div class="accordion-body">
+              <div class="d-flex justify-content-start">
+                - Alerts when reaches: {{ product.quantity_alert }}
+              </div>
+              <div class="d-flex justify-content-center">
+                <a href="{{ url_for('inflow.supply_product', id=product['id']) }}" role="button" class="btn btn-success me-2">
+                  Supply
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   {% endif %}
 
   {% if recipes %}
@@ -45,29 +70,29 @@
         <div class="accordion-item" data-product-id="{{ prod_id }}">
           <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ prod_name|kebab_case }}-{{ prod_id }}" aria-expanded="false" aria-controls="{{ prod_name|kebab_case }}">
-              {{ prod_name|title }}
+              <span><strong id="">[{{ recipe.product_amount }}] </strong> {{ prod_name|title }}</span>
             </button>
           </h2>
           <div id="{{ prod_name|kebab_case }}-{{ prod_id }}" class="accordion-collapse collapse" data-bs-parent="#recipes-accordion">
             <div class="accordion-body" id="{{ prod_id }}-items">
               {% if recipe.items_list[0] != None %}
-                <div>
+                <div class="text-start">
                   {% for item in recipe.items_list %}
-                    <li class="text-start" id="{{ prod_id }}-{{ item['id'] }}" data-id="{{ item['id'] }}">
+                    <li id="{{ prod_id }}-{{ item['id'] }}" data-id="{{ item['id'] }}">
                       <strong id="{{ prod_id }}-{{ item['id'] }}-total">{{ item['total'] }}</strong> - 
                       <span id="{{ prod_id }}-{{ item['id'] }}-demand">{{ item['demand'] }}</span>x 
-                      {{ item['name']|title }} 
+                      {{ item['name']|title }}
                     </li>
                   {% endfor %}
+                  - Alerts when reaches: {{ recipe.product_alert }}
                 </div>
               {% else %}
                 <li class="text-start">No recipe</li>
               {% endif %}
               <div class="d-flex justify-content-center">
-                {% set input_id = prod_id~"-input" %}
-                <button class="btn btn-primary decrement" id="{{ prod_id }}-decrement" data-product-id="{{ prod_id }}"><i class="bi bi-caret-left-fill"></i></button>
-                <input type="number" id="{{ input_id }}" class="form-control mx-2 dynamic-width" min="0" value="{{ recipe.product_amount|default(0) }}">
-                <button class="btn btn-primary increment" id="{{ prod_id }}-increment" data-product-id="{{ prod_id }}"><i class="bi bi-caret-right-fill"></i></button>                
+                <a href="{{ url_for('inflow.produce_product', id=prod_id) }}" role="button" class="btn btn-success me-2">
+                  Supply
+                </a>
               </div>
             </div>
           </div>

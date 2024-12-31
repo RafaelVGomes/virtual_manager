@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% from "partials/macros.html" import error %}
+
+{% block title %}
+  Inflow - Produce: Product
+{% endblock title %}
+
+{% block main %}
+  <link href="{{ url_for('inflow.static', filename='css/produce-product-detail.css') }}" rel="stylesheet">
+  <script type="module" src="{{ url_for('inflow.static', filename='js/produce-product-detail.js')}}"></script>
+
+  <h4 class="mb-3">Produce Product</h4>
+  <form action="{{ request.path }}" method="POST">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <div class="mb-3">
+          <h3>{{ form.product_name|title }}</h3>
+        </div>
+        {% if form.items_list[0] != None %}
+          <div class="mb-3" id="list">
+            {% for item in form.items_list %}
+              <li class="text-start" data-item-id="{{ item['id'] }}"
+                data-alert="{{ item['alert'] }}" data-total="{{ item['total'] }}"
+                data-max="{{ form.max_production }}">
+                <strong id="{{ item['id'] }}-total">{{ item['total'] }}</strong> - 
+                <input type="hidden" name="{{ item['id'] }}" class="{{ item['id'] }}" value="{{ item['total'] }}">
+                <span id="{{ item['id'] }}-demand">{{ item['demand'] }}</span>x 
+                <span id="{{ item['id'] }}-name">{{ item['name']|title }}</span>
+              </li>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="form-floating mb-3">
+          <input autofocus type="number" name="quantity_alert" class="form-control" id="quantity_alert" value="{{ form.product_alert }}" min="0" required>
+          <label for="quantity_alert">Quantity alert</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="number" name="amount" class="form-control" id="amount" value="{{ form.product_amount }}" min="{{ form.product_amount|default }}" max="{{ form.max_production }}" required>
+          <label for="amount">Amount</label>
+        </div>
+        <div>
+          <button class="btn btn-success" type="submit" id="save">Save</button>
+          <a href="{{ url_for('inflow.overview') }}" role="button" class="btn btn-danger">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock main %}
