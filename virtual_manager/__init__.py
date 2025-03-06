@@ -1,5 +1,4 @@
 import os
-
 from flask import Flask
 
 from virtual_manager.helpers import camelCase, kebab_case, usd
@@ -31,8 +30,8 @@ def create_app(test_config=None):
       pass
 
     # initialize DB
-    from . import db
-    db.init_app(app)
+    from .db import init_app
+    init_app(app)
 
     # Package structure -> https://youtu.be/44PvX0Yv368
     # Blueprints registration
