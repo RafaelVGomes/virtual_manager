@@ -3,7 +3,7 @@ from pprint import pprint
 
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 from virtual_manager.src.auth.views import login_required
 
 
@@ -46,7 +46,7 @@ bp = Blueprint('transactions', __name__, url_prefix='/transaction', template_fol
 @login_required
 def overview():
   """List all products and items with stock low"""
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   db_items = db.execute(
@@ -116,7 +116,7 @@ def overview():
 @login_required
 def inflow():
   """List all registered items, products and recipes"""
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   context['items'] = db.execute(
@@ -181,7 +181,7 @@ def outflow():
 @login_required
 def restock():
   """Create product"""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = {}
 
   if request.method == "GET":

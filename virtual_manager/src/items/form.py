@@ -3,7 +3,7 @@ from typing import Literal, Optional, TypedDict, Union
 
 from flask import Request, abort, flash, g
 
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 
 class Attrs(TypedDict, total=False):
   min: int
@@ -69,7 +69,7 @@ def get_form(id: Optional[int]=None, request: Optional[Request]=None, exclude: O
         else:
           field['value'] = request.form.get(field['name'], type=int)
   elif id:
-    db = get_db()
+    db = DatabaseManager().connect()
     fields = [field['name'] for field in form]
     fields = ', '.join(fields)
     query = f"SELECT {fields} FROM items WHERE id = ? AND user_id = ?;"

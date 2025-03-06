@@ -2,7 +2,7 @@ import re
 
 from flask import Request
 
-from .db import get_db
+from .db import DatabaseManager
 
 
 def usd(value):
@@ -58,10 +58,11 @@ def form_factory(request: Request, table_name: str, custom_fields: dict | list, 
     >>>  {...}
     >>> ]
   """
+  db = DatabaseManager().connect()
   data = {'errors': []}
   form = request.form
   fields = []
-  rows = get_db().execute(f"PRAGMA table_info({table_name});").fetchall()
+  rows = db.execute(f"PRAGMA table_info({table_name});").fetchall()
 
   if not rows:
    print("No data returned")

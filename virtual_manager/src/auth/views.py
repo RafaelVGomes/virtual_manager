@@ -4,7 +4,7 @@ from flask import (Blueprint, flash, g, redirect, render_template, request, sess
                    url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 
 
 def login_required(view):
@@ -18,7 +18,7 @@ def login_required(view):
 
 def validate_registration_data(form):
   errors = {}
-  db = get_db()
+  db = DatabaseManager().connect()
   
   if not form['username']:
     errors['username'] = 'Username is required.'
@@ -48,7 +48,7 @@ def load_logged_in_user():
   if user_id is None:
     g.user = None
   else:
-    g.user = get_db().execute(
+    g.user = DatabaseManager().connect().execute(
       "SELECT * FROM users WHERE id = ?", (user_id,)
     ).fetchone()
 
@@ -58,7 +58,7 @@ def check_username():
   query = request.args.get('q')
   
   if query:
-    username = get_db().execute("SELECT username FROM users WHERE username = ?", (query.lower(),)).fetchone()
+    username = DatabaseManager().connect().execute("SELECT username FROM users WHERE username = ?", (query.lower(),)).fetchone()
     if username:
       return ('false', 'true')[query == username['username']]
     else:
@@ -82,7 +82,7 @@ def register():
       return render_template('register.html', data=data)
     
     try:
-      db = get_db()
+      db = DatabaseManager().connect()
       data['password'] = generate_password_hash(data['password'])
 
       db.execute(
@@ -102,7 +102,7 @@ def register():
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
   if request.method == 'POST':
-    db = get_db()
+    db = DatabaseManager().connect()
     username = request.form['username']
     password = request.form['password']
     user = False

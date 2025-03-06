@@ -2,7 +2,7 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template, reques
                    url_for)
 
 from .form import get_data_to_save, get_form, validate_form
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 from virtual_manager.src.auth.views import login_required
 
 
@@ -12,7 +12,7 @@ bp = Blueprint('items', __name__, url_prefix='/items', template_folder='./html',
 @login_required
 def overview():
   """List all items in stock."""
-  db = get_db()
+  db = DatabaseManager().connect()
   items = db.execute("""--sql
     SELECT id, item_name, amount, measure
     FROM items WHERE user_id = ?
@@ -33,7 +33,7 @@ def create_item():
       form_to_save = get_data_to_save(form)
       
       try:
-        db = get_db()
+        db = DatabaseManager().connect()
         db.execute(
           """--sql
           INSERT INTO items (user_id, item_name, measure)
@@ -53,7 +53,7 @@ def create_item():
 @login_required
 def update_item(id):
   """Modify item."""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = get_form(id=id)
 
   if request.method == "POST":
@@ -94,7 +94,7 @@ def update_item(id):
 @login_required
 def delete_item(id):
   """Erase item."""
-  db = get_db()
+  db = DatabaseManager().connect()
   item = db.execute(
     "SELECT * FROM items WHERE id = ? AND user_id = ?;", (id, g.user['id'])
   ).fetchone()

@@ -27,6 +27,7 @@
     "jsonify",
     "labelledby",
     "lastrowid",
+    "nullable",
     "pycache",
     "pyfile",
     "pytest",
@@ -47,7 +48,8 @@
   "editor.detectIndentation": false,
   "files.exclude": {
     "**/__pycache__": true,
-    ".venv": true
+    ".venv": true,
+    ".pytest_cache": true
   },
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"

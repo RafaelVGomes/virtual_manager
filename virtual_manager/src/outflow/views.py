@@ -1,7 +1,7 @@
 from flask import (Blueprint, abort, flash, g, redirect, render_template, request,
                    url_for)
 
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 from virtual_manager.src.auth.views import login_required
 
 bp = Blueprint('outflow', __name__, url_prefix='/outflow', template_folder='./html', static_folder='../outflow')
@@ -10,7 +10,7 @@ bp = Blueprint('outflow', __name__, url_prefix='/outflow', template_folder='./ht
 @login_required
 def overview():
   """List all registered items, products and recipes."""
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   context['items'] = db.execute("""--sql
@@ -31,7 +31,7 @@ def overview():
 @login_required
 def withdraw_item(id):
   """List all registered items."""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = db.execute("""--sql
     SELECT id, item_name, amount
     FROM items WHERE user_id = ? AND id = ?
@@ -71,7 +71,7 @@ def withdraw_item(id):
 @login_required
 def withdraw_product(id):
   """List all registered products."""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = db.execute("""--sql
     SELECT id, product_name, amount
     FROM products WHERE user_id = ? AND id = ?

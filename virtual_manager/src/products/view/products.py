@@ -2,7 +2,7 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template, reques
                    url_for)
 
 from virtual_manager.src.auth.views import login_required
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 
 
 def validate_form(form):
@@ -35,7 +35,7 @@ bp = Blueprint('products', __name__, url_prefix='/products', template_folder='..
 @login_required
 def overview():
   """List all products on stock"""
-  db = get_db()
+  db = DatabaseManager().connect()
   user_id = g.user['id']
   products = db.execute("""--sql
     SELECT id, product_name, measure, has_recipe
@@ -49,7 +49,7 @@ def overview():
 @login_required
 def create_product():
   """Create product"""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = {}
 
   if request.method == "GET":
@@ -99,7 +99,7 @@ def create_product():
 @login_required
 def update_product(id):
   """Modify product"""
-  db = get_db()
+  db = DatabaseManager().connect()
   product = db.execute("SELECT * FROM products WHERE id = ? AND user_id = ?;", (id, g.user['id'])).fetchone()
 
   if not product:
@@ -152,7 +152,7 @@ def update_product(id):
 @login_required
 def delete_product(id):
   """Erase product"""
-  db = get_db()
+  db = DatabaseManager().connect()
   product = db.execute(
     "SELECT * FROM products WHERE id = ? AND user_id = ?;",
     (id, g.user['id'])

@@ -1,7 +1,7 @@
 from flask import (Blueprint, abort, flash, g, redirect, render_template, request,
                    url_for)
 
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 from virtual_manager.src.auth.views import login_required
 
 bp = Blueprint('inflow', __name__, url_prefix='/inflow', template_folder='./html', static_folder='../inflow')
@@ -49,7 +49,7 @@ def group_recipes(context):
 @login_required
 def overview():
   """List all registered items, products and recipes."""
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   context['items'] = db.execute("""--sql
@@ -79,7 +79,7 @@ def overview():
 @login_required
 def supply_item(id):
   """List all registered items."""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = db.execute("""--sql
     SELECT id, item_name, quantity_alert, amount
     FROM items WHERE user_id = ? AND id = ?
@@ -119,7 +119,7 @@ def supply_item(id):
 @login_required
 def supply_product(id):
   """List all registered products."""
-  db = get_db()
+  db = DatabaseManager().connect()
   form = db.execute("""--sql
     SELECT id, product_name, quantity_alert, amount, has_recipe
     FROM products WHERE has_recipe = 0 AND user_id = ? AND id = ?
@@ -159,7 +159,7 @@ def supply_product(id):
 @login_required
 def produce_product(id):
   """List all registered products."""
-  db = get_db()
+  db = DatabaseManager().connect()
   
   if request.method == "GET":
     context = {}

@@ -4,7 +4,7 @@ from flask import (Blueprint, Request, flash, g, redirect, render_template, requ
                    url_for)
 
 from virtual_manager.src.auth.views import login_required
-from virtual_manager.db import get_db
+from virtual_manager.db import DatabaseManager
 
 
 def form_handle(product_id: int, request: Request) -> tuple[int, list[dict]]:
@@ -71,7 +71,7 @@ bp = Blueprint('recipes', __name__, url_prefix='/recipes', template_folder='../h
 @login_required
 def overview():
   """List all products with recipes"""
-  db = get_db()
+  db = DatabaseManager().connect()
   db_recipes = db.execute(
     """--sql
     SELECT p.id AS product_id, p.product_name,
@@ -114,7 +114,7 @@ def overview():
 @login_required
 def create_recipe(product_id: int):
   """Create recipes"""
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   context['product'] = db.execute("""--sql
@@ -161,7 +161,7 @@ def create_recipe(product_id: int):
 @bp.route("/update-recipe/<int:product_id>", methods=["GET", "POST"])
 @login_required
 def update_recipe(product_id: int):
-  db = get_db()
+  db = DatabaseManager().connect()
   context = {}
 
   context['product'] = db.execute("""--sql
@@ -236,7 +236,7 @@ def update_recipe(product_id: int):
 @bp.route("/delete-recipe/<int:id>", methods=["POST"])
 @login_required
 def delete_recipe(id: int):
-  db = get_db()
+  db = DatabaseManager().connect()
 
   try:
     db.execute("""--sql
